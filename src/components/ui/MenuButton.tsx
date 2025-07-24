@@ -4,10 +4,7 @@ type Props = {
 };
 function MenuButton(props: Props) {
   return (
-    <a
-      href={props.url}
-      className="font-bold text-white px-2 py-3 hover:scale-108 transition-transform duration-200 ease-in-out"
-    >
+    <a href={props.url} className="font-medium text-white text-lg px-2 py-3">
       {props.text}
     </a>
   );

@@ -2,15 +2,15 @@ import MenuButton from "../ui/MenuButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import logoUrl from "../../assets/logo.svg";
+import logoUrl from "../../assets/logo3.png";
 
 function Navbar() {
   return (
-    <nav className="flex px-20 h-15 items-center justify-between space-x-4 bg-blue-950">
-      <div className="flex space-x-4">
-        <a href="/" className="flex justify-center">
-          <img src={logoUrl} className="w-50" />
-        </a>
+    <nav className="flex px-20 h-20 justify-between items-center space-x-4 bg-gray-900">
+      <a href="/">
+        <img src={logoUrl} className="w-40" />
+      </a>
+      <div className="flex space-x-15">
         <MenuButton text="Movies" url="#" />
         <MenuButton text="TV Shows" url="#" />
         <MenuButton text="People" url="#" />
