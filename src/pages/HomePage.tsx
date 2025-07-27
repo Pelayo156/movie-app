@@ -1,7 +1,9 @@
+import Carousel from "../components/ui/Carousel";
+
 function HomePage() {
   return (
-    <div>
-      <h1>Home Page</h1>
+    <div className="bg-gray-950">
+      <Carousel></Carousel>
     </div>
   );
 }

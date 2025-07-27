@@ -6,7 +6,7 @@ import logoUrl from "../../assets/logo3.png";
 
 function Navbar() {
   return (
-    <nav className="flex px-20 h-20 justify-between items-center space-x-4 bg-gray-900">
+    <nav className="flex px-20 h-20 justify-between items-center space-x-4 bg-black shadow-2xl">
       <a href="/">
         <img src={logoUrl} className="w-40" />
       </a>
