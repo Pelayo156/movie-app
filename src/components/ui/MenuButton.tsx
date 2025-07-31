@@ -4,7 +4,10 @@ type Props = {
 };
 function MenuButton(props: Props) {
   return (
-    <a href={props.url} className="font-medium text-white text-lg px-2 py-3">
+    <a
+      href={props.url}
+      className="font-medium text-white text-lg px-2 py-3 mask-t-from-6"
+    >
       {props.text}
     </a>
   );

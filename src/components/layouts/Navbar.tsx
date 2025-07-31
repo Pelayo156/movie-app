@@ -8,7 +8,7 @@ function Navbar() {
   return (
     <nav className="flex px-20 h-20 justify-between items-center space-x-4 bg-black shadow-2xl">
       <a href="/">
-        <img src={logoUrl} className="w-40" />
+        <img src={logoUrl} className="w-40 mask-b-from-8" />
       </a>
       <div className="flex space-x-15">
         <MenuButton text="Movies" url="#" />
