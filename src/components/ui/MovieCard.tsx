@@ -5,7 +5,7 @@ type Props = {
 };
 
 const apiImageUrl = import.meta.env.VITE_API_IMAGE_URL;
-function CarouselMovieCard(props: Props) {
+function MovieCard(props: Props) {
   return (
     <div className="flex-shrink-0 w-44">
       <div
@@ -32,4 +32,4 @@ function CarouselMovieCard(props: Props) {
   );
 }
 
-export default CarouselMovieCard;
+export default MovieCard;
