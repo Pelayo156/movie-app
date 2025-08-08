@@ -1,49 +1,45 @@
 import { useEffect, useState } from "react";
-import type {
-  APITmdbTrendingMoviesResponse,
-  APITmdbTrendingTVSeriesResponse,
-} from "../types/trending.types";
+import type { TrendingResult } from "../types/trending.types";
 import { trendingService } from "../services/trendingService";
 import MovieCard from "../components/ui/MovieCard";
 
 function HomePage() {
-  const [trendingMovies, setTrendingMovies] =
-    useState<APITmdbTrendingMoviesResponse>();
+  const [trendingItems, setTrendingItems] = useState<TrendingResult[]>([]);
 
-  const [trendingTvSeries, settrendingTvSeries] =
-    useState<APITmdbTrendingTVSeriesResponse>();
+  const [trendingMediaType, setTrendingMediaType] = useState<
+    "Películas" | "TV Series"
+  >("Películas");
 
-  const [trendingMediaType, setTrendingMediaType] = useState<"Películas" | "TV Series">(
-    "Películas"
-  );
-
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<String | null>(null);
 
   useEffect(() => {
     // Obtener películas en tendencia
-    const fetchTrendingMovies = async () => {
+    const fetchTrendingItems = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      // Se guardan las películas en tendencia en solo un estado dependiendo de la elección del usuario.
       try {
-        const data = await trendingService.getMovies();
-        setTrendingMovies(data);
+        let data;
+        if (trendingMediaType === "Películas") {
+          const response = await trendingService.getMovies();
+          data = response.results;
+        } else {
+          const response = await trendingService.getTvSeries();
+          data = response.results;
+        }
+        setTrendingItems(data);
       } catch (err) {
-        setError("Error al traer películas en tendencia.");
+        setError("Error al obtener películas o series en tendencia.");
+        console.error(err);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchTrendingMovies();
-
-    // Obtener TV series en tendencia
-    const fetchTrendingTVSeries = async () => {
-      try {
-        const data = await trendingService.getTvSeries();
-        settrendingTvSeries(data);
-      } catch (err) {
-        setError("Error al traer TV Series en tendencia.");
-      }
-    };
-
-    fetchTrendingTVSeries();
-  }, []);
+    fetchTrendingItems();
+  }, [trendingMediaType]);
 
   return (
     <div className="bg-gray-950">
@@ -76,23 +72,23 @@ function HomePage() {
         </div>
       </div>
       <div className="flex flex-row max-w-7xl mx-auto overflow-x-auto space-x-6 px-2 pt-6">
-        {trendingMediaType === "Películas"
-          ? trendingMovies?.results.map((movie) => (
-              <MovieCard
-              key={movie.id}
-                poster_path={movie.poster_path}
-                title={movie.title}
-                release_date={movie.release_date}
-              ></MovieCard>
-            ))
-          : trendingTvSeries?.results.map((serie) => (
-              <MovieCard
-              key={serie.id}
-                poster_path={serie.poster_path}
-                title={serie.name}
-                release_date={serie.first_air_date}
-              ></MovieCard>
-            ))}
+        {isLoading && <p className="text-white">Cargando...</p>}
+        {error && <p className="text-red-500">{error}</p>}
+
+        {!isLoading &&
+          !error &&
+          trendingItems.map((items) => (
+            <MovieCard
+              key={items.id}
+              poster_path={items.poster_path}
+              title={"title" in items ? items.title : items.name}
+              release_date={
+                "release_date" in items
+                  ? items.release_date
+                  : items.first_air_date
+              }
+            />
+          ))}
       </div>
       {/* Fin Carousel de Tendencias */}
     </div>
