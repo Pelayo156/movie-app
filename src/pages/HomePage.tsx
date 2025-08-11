@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
 import type { TrendingResult } from "../types/trending.types";
+import type { MovieListsResult } from "../types/movieLists.types";
 import { trendingService } from "../services/trendingService";
+import { movieListsService } from "../services/movieListsService";
 import MovieCard from "../components/ui/MovieCard";
 
+const apiImageUrl = import.meta.env.VITE_API_IMAGE_URL;
 function HomePage() {
   const [trendingItems, setTrendingItems] = useState<TrendingResult[]>([]);
+  const [movieListsItems, setmovieListsItems] = useState<MovieListsResult[]>(
+    []
+  );
 
   const [trendingMediaType, setTrendingMediaType] = useState<
     "Películas" | "TV Series"
@@ -41,12 +47,39 @@ function HomePage() {
     fetchTrendingItems();
   }, [trendingMediaType]);
 
+  useEffect(() => {
+    const fetchMovieListsItems = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      // Se guardan las películas en movie Lists.
+      try {
+        const response = await movieListsService.getPopular();
+        const data = response.results;
+        setmovieListsItems(data);
+      } catch (err) {
+        setError("Error al obtener películas o series populares.");
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchMovieListsItems();
+  }, []);
+
   return (
     <div className="bg-gray-950">
       {/* Inicio Poster Principal */}
+      <div
+        className="relative w-full h-[75vh] bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url(${apiImageUrl}/original/${trendingItems[0]?.backdrop_path})`,
+        }}
+      ></div>
+      {/* Fin Poster Principal */}
 
       {/* Inicio Carousel de Tendencias */}
-      <div className="font-bold text-2xl text-white flex flex-row max-w-7xl mx-auto pt-20">
+      <div className="font-bold text-2xl text-white flex flex-row max-w-9/10 mx-auto pt-10">
         Tendencia
         <div className="flex space-x-2 bg-gray-300 p-1 rounded-xl ml-8">
           <button
@@ -71,7 +104,7 @@ function HomePage() {
           </button>
         </div>
       </div>
-      <div className="flex flex-row max-w-7xl mx-auto overflow-x-auto space-x-6 px-2 pt-6">
+      <div className="flex flex-row max-w-9/10 mx-auto overflow-x-auto space-x-6 px-2 pt-6">
         {isLoading && <p className="text-white">Cargando...</p>}
         {error && <p className="text-red-500">{error}</p>}
 
@@ -91,6 +124,27 @@ function HomePage() {
           ))}
       </div>
       {/* Fin Carousel de Tendencias */}
+
+      {/* Inicio Carousel de Movie Lists */}
+      <div className="font-bold text-2xl text-white flex flex-row max-w-9/10 mx-auto pt-20">
+        Populares
+      </div>
+      <div className="flex flex-row max-w-9/10 mx-auto overflow-x-auto space-x-6 px-2 pt-6">
+        {isLoading && <p className="text-white">Cargando...</p>}
+        {error && <p className="text-red-500">{error}</p>}
+
+        {!isLoading &&
+          !error &&
+          movieListsItems.map((items) => (
+            <MovieCard
+              key={items.id}
+              poster_path={items.poster_path}
+              title={items.original_title}
+              release_date={items.release_date}
+            />
+          ))}
+      </div>
+      {/* Fin Carousel de Movie Lists */}
     </div>
   );
 }

@@ -16,6 +16,7 @@ export interface BaseTrendingResult {
 }
 
 export interface ResultMovies extends BaseTrendingResult {
+    media_type:        "movie";
     title:             string;
     original_title:    string;
     release_date:      string;
@@ -23,6 +24,7 @@ export interface ResultMovies extends BaseTrendingResult {
 }
 
 export interface ResultTVSeries extends BaseTrendingResult {
+    media_type:        "tv";
     name:              string;
     original_name:     string;
     first_air_date:    string;
