@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
@@ -105,7 +106,7 @@ function HomePage() {
   };
 
   return (
-    <div className="bg-gray-950">
+    <div className="bg-gray-950 mt-20">
       {/* Inicio Poster Principal */}
       <div
         className="relative w-full h-[75vh] bg-cover bg-center bg-no-repeat"
@@ -178,16 +179,17 @@ function HomePage() {
           {!isLoading &&
             !error &&
             trendingItems.map((items) => (
-              <MovieCard
-                key={items.id}
-                poster_path={items.poster_path}
-                title={"title" in items ? items.title : items.name}
-                release_date={
-                  "release_date" in items
-                    ? items.release_date
-                    : items.first_air_date
-                }
-              />
+              <Link to={`/movie/${items.id}`} key={items.id}>
+                <MovieCard
+                  poster_path={items.poster_path}
+                  title={"title" in items ? items.title : items.name}
+                  release_date={
+                    "release_date" in items
+                      ? items.release_date
+                      : items.first_air_date
+                  }
+                />
+              </Link>
             ))}
         </div>
         <button
@@ -226,12 +228,14 @@ function HomePage() {
           {!isLoading &&
             !error &&
             movieListsItems.map((items) => (
-              <MovieCard
-                key={items.id}
-                poster_path={items.poster_path}
-                title={items.original_title}
-                release_date={items.release_date}
-              />
+              <Link to={`/movie/${items.id}`} key={items.id}>
+                <MovieCard
+                  key={items.id}
+                  poster_path={items.poster_path}
+                  title={items.original_title}
+                  release_date={items.release_date}
+                />
+              </Link>
             ))}
         </div>
         <button

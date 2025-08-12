@@ -1,15 +1,15 @@
 import MenuButton from "../ui/MenuButton";
+import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faPlus } from "@fortawesome/free-solid-svg-icons";
 import logoUrl from "../../assets/logo3.png";
 
 function Navbar() {
   return (
     <nav className="flex px-20 h-20 justify-between items-center space-x-4 bg-black shadow-2xl fixed top-0 left-0 right-0 z-50">
-      <a href="/">
+      <Link to="/">
         <img src={logoUrl} className="w-40" />
-      </a>
+      </Link>
       <div className="flex space-x-14">
         <MenuButton text="Películas" url="#" />
         <MenuButton text="TV Shows" url="#" />
