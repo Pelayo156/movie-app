@@ -10,7 +10,7 @@ function Navbar() {
       <a href="/">
         <img src={logoUrl} className="w-40" />
       </a>
-      <div className="flex space-x-15">
+      <div className="flex space-x-14">
         <MenuButton text="Películas" url="#" />
         <MenuButton text="TV Shows" url="#" />
         <MenuButton text="Personas" url="#" />

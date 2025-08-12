@@ -1,4 +1,9 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronLeft,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 import type { TrendingResult } from "../types/trending.types";
 import type { MovieListsResult } from "../types/movieLists.types";
 import { trendingService } from "../services/trendingService";
@@ -7,15 +12,22 @@ import MovieCard from "../components/ui/MovieCard";
 
 const apiImageUrl = import.meta.env.VITE_API_IMAGE_URL;
 function HomePage() {
+  // Variables para setear listas de películas para los Carousel
   const [trendingItems, setTrendingItems] = useState<TrendingResult[]>([]);
   const [movieListsItems, setmovieListsItems] = useState<MovieListsResult[]>(
     []
   );
 
+  // Variables para cambiar opción del toogle de cada Carousel
   const [trendingMediaType, setTrendingMediaType] = useState<
     "Películas" | "TV Series"
   >("Películas");
 
+  // Variables para de referencias para elementos del DOM
+  const trendingCarouselRef = useRef<HTMLDivElement>(null);
+  const movieListsCarouselRef = useRef<HTMLDivElement>(null);
+
+  // Variables para estado de carga y mensajes de errores
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<String | null>(null);
 
@@ -72,6 +84,26 @@ function HomePage() {
     fetchMovieListsItems();
   }, []);
 
+  // Función para hacer Scroll hacia la izquierda en Carousel
+  const scrollLeft = (ref: React.RefObject<HTMLDivElement | null>) => {
+    if (ref.current) {
+      ref.current.scrollBy({
+        left: -ref.current.offsetWidth,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  // Función para hacer Scroll hacia la derecha en Carousel
+  const scrollRight = (ref: React.RefObject<HTMLDivElement | null>) => {
+    if (ref.current) {
+      ref.current.scrollBy({
+        left: ref.current.offsetWidth,
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
     <div className="bg-gray-950">
       {/* Inicio Poster Principal */}
@@ -85,7 +117,6 @@ function HomePage() {
 
         <div className="absolute top-0 left-0 flex h-full w-full items-center z-10">
           <div className="px-20">
-            {/* pt-20 para la navbar y px-20 para el margen lateral */}
             {posterMovie && (
               <h1 className="text-white text-6xl font-bold">
                 {"name" in posterMovie
@@ -96,7 +127,6 @@ function HomePage() {
             <p className="text-white text-lg mt-4 max-w-lg">
               {trendingItems[0]?.overview}
             </p>
-            {/* Puedes agregar más elementos como botones aquí */}
           </div>
         </div>
       </div>
@@ -128,45 +158,91 @@ function HomePage() {
           </button>
         </div>
       </div>
-      <div className="flex flex-row max-w-9/10 mx-auto overflow-x-auto space-x-6 px-2 pt-6">
-        {isLoading && <p className="text-white">Cargando...</p>}
-        {error && <p className="text-red-500">{error}</p>}
+      <div className="relative max-w-[100%] mx-4">
+        <button
+          onClick={() => {
+            scrollLeft(trendingCarouselRef);
+          }}
+          className=" absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 text-white p-2 rounded-full hover:bg-black/80 transition-all"
+          aria-label="Scroll Left"
+        >
+          <FontAwesomeIcon icon={faChevronLeft} size="lg" />
+        </button>
+        <div
+          ref={trendingCarouselRef}
+          className="flex flex-row max-w-9/10 mx-auto overflow-x-auto space-x-6 px-2 pt-6 scrollbar-hide"
+        >
+          {isLoading && <p className="text-white">Cargando...</p>}
+          {error && <p className="text-red-500">{error}</p>}
 
-        {!isLoading &&
-          !error &&
-          trendingItems.map((items) => (
-            <MovieCard
-              key={items.id}
-              poster_path={items.poster_path}
-              title={"title" in items ? items.title : items.name}
-              release_date={
-                "release_date" in items
-                  ? items.release_date
-                  : items.first_air_date
-              }
-            />
-          ))}
+          {!isLoading &&
+            !error &&
+            trendingItems.map((items) => (
+              <MovieCard
+                key={items.id}
+                poster_path={items.poster_path}
+                title={"title" in items ? items.title : items.name}
+                release_date={
+                  "release_date" in items
+                    ? items.release_date
+                    : items.first_air_date
+                }
+              />
+            ))}
+        </div>
+        <button
+          onClick={() => {
+            scrollRight(trendingCarouselRef);
+          }}
+          className=" absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 text-white p-2 rounded-full hover:bg-black/80 transition-all"
+          aria-label="Scroll Right"
+        >
+          <FontAwesomeIcon icon={faChevronRight} size="lg" />
+        </button>
       </div>
       {/* Fin Carousel de Tendencias */}
 
       {/* Inicio Carousel de Movie Lists */}
-      <div className="font-bold text-2xl text-white flex flex-row max-w-9/10 mx-auto pt-20">
+      <div className="font-bold text-2xl text-white flex flex-row max-w-9/10 mx-auto pt-10 text-prueba-funciona">
         Populares
       </div>
-      <div className="flex flex-row max-w-9/10 mx-auto overflow-x-auto space-x-6 px-2 pt-6">
-        {isLoading && <p className="text-white">Cargando...</p>}
-        {error && <p className="text-red-500">{error}</p>}
+      <div className="relative max-w-[100%] mx-4">
+        <button
+          onClick={() => {
+            scrollLeft(movieListsCarouselRef);
+          }}
+          className=" absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 text-white p-2 rounded-full hover:bg-black/80 transition-all"
+          aria-label="Scroll Left"
+        >
+          <FontAwesomeIcon icon={faChevronLeft} size="lg" />
+        </button>
+        <div
+          ref={movieListsCarouselRef}
+          className="flex flex-row max-w-9/10 mx-auto overflow-x-auto space-x-6 px-2 pt-6 scrollbar-hide"
+        >
+          {isLoading && <p className="text-white">Cargando...</p>}
+          {error && <p className="text-red-500">{error}</p>}
 
-        {!isLoading &&
-          !error &&
-          movieListsItems.map((items) => (
-            <MovieCard
-              key={items.id}
-              poster_path={items.poster_path}
-              title={items.original_title}
-              release_date={items.release_date}
-            />
-          ))}
+          {!isLoading &&
+            !error &&
+            movieListsItems.map((items) => (
+              <MovieCard
+                key={items.id}
+                poster_path={items.poster_path}
+                title={items.original_title}
+                release_date={items.release_date}
+              />
+            ))}
+        </div>
+        <button
+          onClick={() => {
+            scrollRight(movieListsCarouselRef);
+          }}
+          className=" absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 text-white p-2 rounded-full hover:bg-black/80 transition-all"
+          aria-label="Scroll Right"
+        >
+          <FontAwesomeIcon icon={faChevronRight} size="lg" />
+        </button>
       </div>
       {/* Fin Carousel de Movie Lists */}
     </div>
