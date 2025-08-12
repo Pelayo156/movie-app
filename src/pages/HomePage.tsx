@@ -19,6 +19,11 @@ function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<String | null>(null);
 
+  // Variable para guardar película que se mostrará en el poster inicial
+  const posterMovie = trendingItems.at(
+    Math.floor(Math.random() * trendingItems.length)
+  );
+
   useEffect(() => {
     // Obtener películas en tendencia
     const fetchTrendingItems = async () => {
@@ -73,9 +78,28 @@ function HomePage() {
       <div
         className="relative w-full h-[75vh] bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url(${apiImageUrl}/original/${trendingItems[0]?.backdrop_path})`,
+          backgroundImage: `url(${apiImageUrl}/original/${posterMovie?.backdrop_path})`,
         }}
-      ></div>
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-black/65 to-transparent"></div>
+
+        <div className="absolute top-0 left-0 flex h-full w-full items-center z-10">
+          <div className="px-20">
+            {/* pt-20 para la navbar y px-20 para el margen lateral */}
+            {posterMovie && (
+              <h1 className="text-white text-6xl font-bold">
+                {"name" in posterMovie
+                  ? posterMovie.name
+                  : posterMovie.original_title}
+              </h1>
+            )}
+            <p className="text-white text-lg mt-4 max-w-lg">
+              {trendingItems[0]?.overview}
+            </p>
+            {/* Puedes agregar más elementos como botones aquí */}
+          </div>
+        </div>
+      </div>
       {/* Fin Poster Principal */}
 
       {/* Inicio Carousel de Tendencias */}
