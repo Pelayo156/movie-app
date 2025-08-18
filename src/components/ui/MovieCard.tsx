@@ -12,7 +12,7 @@ function MovieCard(props: Props) {
         className="flex flex-col max-w-sm rounded-xl overflow-hidden bg-white shadow-lg
                             transition-all duration-200 ease-in-out 
                             hover:scale-105 hover:shadow-xl
-                            hover:outline-3 hover:outline-white"
+                            hover:outline-4 hover:outline-white"
       >
         <img
           className="w-auto h-full object-contain"

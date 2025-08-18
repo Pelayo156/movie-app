@@ -22,12 +22,12 @@ function Footer() {
       <div className="flex justify-center items-center space-x-4 w-1/3">
         <SocialLink
           socialIcon={faLinkedin}
-          link="https://cl.linkedin.com/"
+          link="https://cl.linkedin.com/in/bastian-molina-quiroga-167a46292"
           iconColor="text-blue-700"
         />
         <SocialLink
           socialIcon={faGithub}
-          link="https://github.com/"
+          link="https://github.com/Pelayo156"
           iconColor="text-orange-600"
         />
       </div>

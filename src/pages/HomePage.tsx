@@ -109,7 +109,7 @@ function HomePage() {
     <div className="bg-gray-950 mt-20">
       {/* Inicio Poster Principal */}
       <div
-        className="relative w-full h-[75vh] bg-cover bg-center bg-no-repeat"
+        className="relative w-full h-[75vh] bg-cover bg-top bg-no-repeat"
         style={{
           backgroundImage: `url(${apiImageUrl}/original/${posterMovie?.backdrop_path})`,
         }}
@@ -122,11 +122,11 @@ function HomePage() {
               <h1 className="text-white text-6xl font-bold">
                 {"name" in posterMovie
                   ? posterMovie.name
-                  : posterMovie.original_title}
+                  : posterMovie.title}
               </h1>
             )}
-            <p className="text-white text-lg mt-4 max-w-lg">
-              {trendingItems[0]?.overview}
+            <p className="text-white text-lg text-justify mt-10 max-w-3xl">
+              {posterMovie?.overview}
             </p>
           </div>
         </div>
@@ -179,7 +179,14 @@ function HomePage() {
           {!isLoading &&
             !error &&
             trendingItems.map((items) => (
-              <Link to={`/movie/${items.id}`} key={items.id}>
+              <Link
+                to={
+                  trendingMediaType == "Películas"
+                    ? `/movie/${items.id}`
+                    : `/tv/${items.id}`
+                }
+                key={items.id}
+              >
                 <MovieCard
                   poster_path={items.poster_path}
                   title={"title" in items ? items.title : items.name}

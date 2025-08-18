@@ -3,11 +3,11 @@ import type { APITmdbTrendingMoviesResponse, APITmdbTrendingTVSeriesResponse } f
 
 export const trendingService = {
     getMovies: async (): Promise<APITmdbTrendingMoviesResponse> => {
-        const response = await apiClient.get('/trending/movie/day');
+        const response = await apiClient.get('/trending/movie/day?language=es');
         return response.data;
     },
     getTvSeries: async (): Promise<APITmdbTrendingTVSeriesResponse> => {
-        const response = await apiClient.get('/trending/tv/day');
+        const response = await apiClient.get('/trending/tv/day?language=es');
         return response.data;
     }
 }
