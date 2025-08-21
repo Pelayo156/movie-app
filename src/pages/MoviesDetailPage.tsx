@@ -1,17 +1,20 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { moviesService } from "../services/moviesService";
-import { faList, faHeart, faBookmark } from "@fortawesome/free-solid-svg-icons";
-import AccountActionButton from "../components/ui/AccountActionButton";
-import type { APITmdbMovieResponse } from "../types/movies.types";
+import type {
+  APITmdbMovieDetailsResponse,
+  APITmdbMovieCreditsResponse,
+} from "../types/movies.types";
 import PosterDetail from "../components/layouts/PosterDetail";
 
-const apiImageUrl = import.meta.env.VITE_API_IMAGE_URL;
 function MoviesDetailPage() {
   // Variable para guardar datos de la película
-  const [movieDetail, setMovieDetail] = useState<APITmdbMovieResponse | null>(
-    null
-  );
+  const [movieDetail, setMovieDetail] =
+    useState<APITmdbMovieDetailsResponse | null>(null);
+
+  // Variable para guardar creditos la película
+  const [movieCredits, setMovieCredits] =
+    useState<APITmdbMovieCreditsResponse>();
 
   // Variables para estado de carga y mensajes de errores
   const [isLoading, setIsLoading] = useState(false);
@@ -31,13 +34,33 @@ function MoviesDetailPage() {
           setMovieDetail(response);
         }
       } catch (err) {
-        setError(`Error al obtener película con id ${movieId}.`);
+        setError(`Error al obtener detalles de película con id ${movieId}.`);
         console.error(err);
       } finally {
         setIsLoading(false);
       }
     };
+
+    const fetchMovieCredits = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      // Se guardan creditos de la película
+      try {
+        if (movieId) {
+          const response = await moviesService.getCredits(movieId);
+          setMovieCredits(response);
+        }
+      } catch (err) {
+        setError(`Error al obtener creditos de película con id ${movieId}.`);
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchMovieDetails();
+    fetchMovieCredits();
   }, [movieId]);
 
   return (

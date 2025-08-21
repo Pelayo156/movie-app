@@ -120,9 +120,7 @@ function HomePage() {
           <div className="px-20">
             {posterMovie && (
               <h1 className="text-white text-6xl font-bold">
-                {"name" in posterMovie
-                  ? posterMovie.name
-                  : posterMovie.title}
+                {"name" in posterMovie ? posterMovie.name : posterMovie.title}
               </h1>
             )}
             <p className="text-white text-lg text-justify mt-10 max-w-3xl">
