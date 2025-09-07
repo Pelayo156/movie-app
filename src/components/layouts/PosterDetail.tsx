@@ -17,7 +17,7 @@ type Props = {
 const apiImageUrl = import.meta.env.VITE_API_IMAGE_URL;
 function PosterDetail(props: Props) {
   return (
-    <div className="relative w-full h-[60 vh] bg-black">
+    <div className="relative w-full h-[60 vh] pb-10 bg-black">
       <div
         className="absolute top-0 right-0 h-full w-3/5 bg-cover bg-top"
         style={{

@@ -46,7 +46,7 @@ function TvSeriesDetailPage() {
         poster_path={tvSerieDetail?.poster_path}
         release_date={tvSerieDetail?.first_air_date}
         seasons={tvSerieDetail?.seasons.length}
-        title={tvSerieDetail?.name}
+        title={tvSerieDetail?.name} 
         vote_average={tvSerieDetail?.vote_average}
       />
       {/* Fin Poster Principal */}

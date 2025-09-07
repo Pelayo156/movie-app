@@ -2,6 +2,7 @@ import apiClient from "./apiClient";
 import type {
   APITmdbMovieDetailsResponse,
   APITmdbMovieCreditsResponse,
+  APITmdbMovieVideosResponse
 } from "../types/movies.types";
 
 export const moviesService = {
@@ -13,6 +14,10 @@ export const moviesService = {
     const response = await apiClient.get(
       `/movie/${movieId}/credits?language=es`
     );
+    return response.data;
+  },
+  getVideos: async (movieId: string): Promise<APITmdbMovieVideosResponse> => {
+    const response = await apiClient.get(`/movie/${movieId}/videos`);
     return response.data;
   },
 };
