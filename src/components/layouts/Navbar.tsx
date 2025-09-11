@@ -11,7 +11,7 @@ function Navbar() {
         <img src={logoUrl} className="w-40" />
       </Link>
       <div className="flex space-x-14">
-        <MenuButton text="Películas" url="#" />
+        <MenuButton text="Películas" url="/movies" />
         <MenuButton text="TV Shows" url="#" />
         <MenuButton text="Personas" url="#" />
       </div>

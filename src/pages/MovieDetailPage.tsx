@@ -15,7 +15,7 @@ import TrailerModal from "../components/ui/TrailerModal";
 import { capitalize } from "../utils/textUtils";
 
 const apiImageUrl = import.meta.env.VITE_API_IMAGE_URL;
-function MoviesDetailPage() {
+function MovieDetailPage() {
   // Variable para guardar datos de la película
   const [movieDetail, setMovieDetail] =
     useState<APITmdbMovieDetailsResponse | null>(null);
@@ -257,4 +257,4 @@ function MoviesDetailPage() {
     </div>
   );
 }
-export default MoviesDetailPage;
+export default MovieDetailPage;

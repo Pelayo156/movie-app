@@ -4,8 +4,9 @@ import "./index.css";
 import App from "./App.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import HomePage from "./pages/HomePage.tsx";
-import MoviesDetailPage from "./pages/MoviesDetailPage.tsx";
+import MoviesDetailPage from "./pages/MovieDetailPage.tsx";
 import TvSeriesDetailPage from "./pages/TvSeriesDetailPage.tsx";
+import MoviesPage from "./pages/MoviesPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
       {
         path: "tv/:id",
         element: <TvSeriesDetailPage />
+      },
+      {
+        path: "movies",
+        element: <MoviesPage />
       }
     ],
   },
