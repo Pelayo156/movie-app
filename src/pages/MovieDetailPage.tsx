@@ -139,8 +139,10 @@ function MovieDetailPage() {
 
   return (
     <div className="mt-20">
-      {/* Inicio Poster Principal */}
-      <div className="mt-20">
+      {/* Inicio Poster Principal (este componente ya debería ser responsivo internamente si fue diseñado bien) */}
+      <div className="mt-0">
+        {" "}
+        {/* Eliminamos mt-20 extra aquí, ya que Navbar tiene mt-20 */}
         <PosterDetail
           backdrop_path={movieDetail?.backdrop_path}
           genres={movieDetail?.genres}
@@ -154,18 +156,27 @@ function MovieDetailPage() {
       </div>
       {/* Fin Poster Principal */}
 
-      <div className="flex bg-gray-200">
-        <div className="w-1/12"></div>
+      {/* Contenedor principal de Reparto y Detalles */}
+      {/* En pantallas pequeñas, será una columna (flex-col). En md y mayores, será una fila (flex-row). */}
+      <div className="flex flex-col md:flex-row bg-gray-200 py-6 md:py-10 px-4 md:px-0">
+        {/* El w-1/12 se elimina en móvil para maximizar espacio, y se vuelve a poner en md */}
+        <div className="hidden md:block md:w-1/12"></div>
+
         {/* Inicio Carousel Cast */}
-        <div className="p-10 w-2/3">
-          <h2 className="text-2xl font-semibold mb-4 text-black">Reparto</h2>
-          <div className="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-8 gap-6">
+        {/* Ancho completo en móvil, 2/3 en md */}
+        <div className="w-full md:w-2/3 p-4 md:p-10">
+          <h2 className="text-xl md:text-2xl font-semibold mb-4 text-black">
+            Reparto
+          </h2>
+          {/* Grid de reparto - Ajustamos columnas para que no se apilen demasiado en móvil, pero aprovechen el espacio */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 md:gap-6">
             {movieCredits?.cast.slice(0, 7).map((actor) => (
               <div
                 key={actor.id}
-                className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+                className="bg-white rounded-lg md:rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
               >
-                <div className="w-full h-40">
+                {/* Altura de la imagen del actor */}
+                <div className="w-full h-32 sm:h-40 md:h-40">
                   <img
                     src={
                       actor.profile_path
@@ -176,17 +187,18 @@ function MovieDetailPage() {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="p-3">
-                  <p className="text-sm text-gray-600 truncate">
+                <div className="p-2 md:p-3">
+                  <p className="text-xs md:text-sm text-gray-600 truncate">
                     {actor.character}
                   </p>
-                  <h3 className="text-base font-semibold truncate">
+                  <h3 className="text-sm md:text-base font-semibold truncate">
                     {actor.name}
                   </h3>
                 </div>
               </div>
             ))}
-            <div className="flex justify-center items-center gap-1 underline">
+            {/* "Ver más" - Aseguramos que se vea bien en todas las pantallas */}
+            <div className="flex justify-center items-center gap-1 underline text-sm md:text-base">
               <div className="font-bold cursor-pointer text-black hover:text-black/50">
                 Ver más
               </div>
@@ -195,20 +207,29 @@ function MovieDetailPage() {
           </div>
         </div>
         {/* Fin Carousel Cast */}
-        <div className="w-1/4 py-10">
-          <div className="w-2/3 flex flex-col gap-6">
+
+        {/* Sección de detalles a la derecha */}
+        {/* Ancho completo en móvil, 1/4 en md. Padding también ajustable. */}
+        <div className="w-full md:w-1/4 p-4 md:py-10">
+          {/* Contenedor de los TextDetail - Ajustamos ancho y espacio */}
+          <div className="w-full max-w-sm md:w-2/3 md:max-w-none mx-auto flex flex-col gap-4 md:gap-6">
             <div
-              className="flex gap-2 justify-center items-center bg-blue-600 w-1/2 p-3 rounded-xl cursor-pointer
+              className="flex gap-2 justify-center items-center bg-blue-600 w-full p-2 md:p-3 rounded-xl cursor-pointer
                           transition-all duration-200 ease-in-out
                           hover:scale-105 hover:shadow-xl"
             >
               <button
-                className="text-white text-lg font-bold"
+                className="text-white text-base md:text-lg font-bold"
                 onClick={handleWatchTrailer}
               >
-                {(movieVideos && getOfficialTrailer(movieVideos) ? 'Ver Trailer' : 'Trailer no disponible')}
+                {movieVideos && getOfficialTrailer(movieVideos)
+                  ? "Ver Trailer"
+                  : "Trailer no disponible"}
               </button>
-              <FontAwesomeIcon icon={faPlay} className="text-white" />
+              <FontAwesomeIcon
+                icon={faPlay}
+                className="text-white text-sm md:text-base"
+              />
             </div>
 
             <TextDetail title="Estado" value={movieDetail?.status} />
@@ -251,8 +272,8 @@ function MovieDetailPage() {
       <TrailerModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        videoKey={officialTrailer?.key || ''}
-        movieTitle={movieDetail?.title ?? ''}
+        videoKey={officialTrailer?.key || ""}
+        movieTitle={movieDetail?.title ?? ""}
       />
     </div>
   );
