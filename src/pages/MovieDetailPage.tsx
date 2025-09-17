@@ -198,7 +198,7 @@ function MovieDetailPage() {
         <div className="w-1/4 py-10">
           <div className="w-2/3 flex flex-col gap-6">
             <div
-              className="flex gap-2 justify-center items-center bg-black/90 w-1/2 p-3 rounded-xl cursor-pointer
+              className="flex gap-2 justify-center items-center bg-blue-600 w-1/2 p-3 rounded-xl cursor-pointer
                           transition-all duration-200 ease-in-out
                           hover:scale-105 hover:shadow-xl"
             >

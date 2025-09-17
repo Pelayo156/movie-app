@@ -109,7 +109,8 @@ function HomePage() {
     <div className="bg-gray-950 mt-20">
       {/* Inicio Poster Principal */}
       <div
-        className="relative w-full h-[75vh] bg-cover bg-top bg-no-repeat"
+        // h-[75vh] es un buen punto de partida, pero podemos ajustarlo para pantallas más pequeñas
+        className="relative w-full h-[60vh] md:h-[75vh] bg-cover bg-top bg-no-repeat"
         style={{
           backgroundImage: `url(${apiImageUrl}/original/${posterMovie?.backdrop_path})`,
         }}
@@ -117,13 +118,16 @@ function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-r from-black/65 to-transparent"></div>
 
         <div className="absolute top-0 left-0 flex h-full w-full items-center z-10">
-          <div className="px-20">
+          {/* Ajuste de padding y tamaños de texto para responsividad */}
+          <div className="px-5 md:px-10 lg:px-20">
             {posterMovie && (
-              <h1 className="text-white text-6xl font-bold">
+              // Tamaño de texto responsivo
+              <h1 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold">
                 {"name" in posterMovie ? posterMovie.name : posterMovie.title}
               </h1>
             )}
-            <p className="text-white text-lg text-justify mt-10 max-w-3xl">
+            {/* Tamaño de texto y ancho máximo responsivos */}
+            <p className="text-white text-sm sm:text-base md:text-lg text-justify mt-4 md:mt-10 max-w-xl md:max-w-2xl lg:max-w-3xl">
               {posterMovie?.overview}
             </p>
           </div>
@@ -132,9 +136,10 @@ function HomePage() {
       {/* Fin Poster Principal */}
 
       {/* Inicio Carousel de Tendencias */}
-      <div className="font-bold text-2xl text-white flex flex-row max-w-9/10 mx-auto pt-10">
+      <div className="font-bold text-xl md:text-2xl text-white flex flex-col md:flex-row items-start md:items-center max-w-[95%] lg:max-w-[90%] mx-auto pt-8 md:pt-10">
         Tendencia
-        <div className="flex space-x-2 bg-gray-300 p-1 rounded-xl ml-8">
+        {/* Ajuste de márgenes y espaciado para el toggle */}
+        <div className="flex space-x-2 bg-gray-300 p-1 rounded-xl mt-4 md:mt-0 md:ml-8">
           <button
             onClick={() => setTrendingMediaType("Películas")}
             className={`px-3 py-1 text-sm font-semibold rounded-lg transition-colors duration-300 ${
@@ -157,19 +162,22 @@ function HomePage() {
           </button>
         </div>
       </div>
-      <div className="relative max-w-[100%] mx-4">
+      {/* Ancho del contenedor del carrusel y márgenes */}
+      <div className="relative max-w-[100%] mx-0 sm:mx-2 md:mx-4">
+        {/* Botones de navegación del carrusel - ajustamos padding y tamaños de ícono para pantallas pequeñas */}
         <button
           onClick={() => {
             scrollLeft(trendingCarouselRef);
           }}
-          className=" absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 text-white p-2 rounded-full hover:bg-black/80 transition-all"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 text-white p-1 sm:p-2 rounded-full hover:bg-black/80 transition-all"
           aria-label="Scroll Left"
         >
-          <FontAwesomeIcon icon={faChevronLeft} size="lg" />
+          <FontAwesomeIcon icon={faChevronLeft} size="sm" className="sm:text-lg" />
         </button>
         <div
           ref={trendingCarouselRef}
-          className="flex flex-row max-w-9/10 mx-auto overflow-x-auto space-x-6 px-2 pt-6 scrollbar-hide"
+          // Ajuste de max-w, overflow, espaciado y padding para responsividad
+          className="flex flex-row max-w-[95%] lg:max-w-[90%] mx-auto overflow-x-auto space-x-3 sm:space-x-4 md:space-x-6 px-1 sm:px-2 pt-4 md:pt-6 scrollbar-hide"
         >
           {isLoading && <p className="text-white">Cargando...</p>}
           {error && <p className="text-red-500">{error}</p>}
@@ -201,31 +209,34 @@ function HomePage() {
           onClick={() => {
             scrollRight(trendingCarouselRef);
           }}
-          className=" absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 text-white p-2 rounded-full hover:bg-black/80 transition-all"
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 text-white p-1 sm:p-2 rounded-full hover:bg-black/80 transition-all"
           aria-label="Scroll Right"
         >
-          <FontAwesomeIcon icon={faChevronRight} size="lg" />
+          <FontAwesomeIcon icon={faChevronRight} size="sm" className="sm:text-lg" />
         </button>
       </div>
       {/* Fin Carousel de Tendencias */}
 
       {/* Inicio Carousel de Movie Lists */}
-      <div className="font-bold text-2xl text-white flex flex-row max-w-9/10 mx-auto pt-10 text-prueba-funciona">
+      <div className="font-bold text-xl md:text-2xl text-white flex flex-row max-w-[95%] lg:max-w-[90%] mx-auto pt-8 md:pt-10 text-prueba-funciona">
         Populares
       </div>
-      <div className="relative max-w-[100%] mx-4">
+      {/* Ancho del contenedor del carrusel y márgenes */}
+      <div className="relative max-w-[100%] mx-0 sm:mx-2 md:mx-4">
+        {/* Botones de navegación del carrusel - ajustamos padding y tamaños de ícono para pantallas pequeñas */}
         <button
           onClick={() => {
             scrollLeft(movieListsCarouselRef);
           }}
-          className=" absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 text-white p-2 rounded-full hover:bg-black/80 transition-all"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 text-white p-1 sm:p-2 rounded-full hover:bg-black/80 transition-all"
           aria-label="Scroll Left"
         >
-          <FontAwesomeIcon icon={faChevronLeft} size="lg" />
+          <FontAwesomeIcon icon={faChevronLeft} size="sm" className="sm:text-lg" />
         </button>
         <div
           ref={movieListsCarouselRef}
-          className="flex flex-row max-w-9/10 mx-auto overflow-x-auto space-x-6 px-2 pt-6 scrollbar-hide"
+          // Ajuste de max-w, overflow, espaciado y padding para responsividad
+          className="flex flex-row max-w-[95%] lg:max-w-[90%] mx-auto overflow-x-auto space-x-3 sm:space-x-4 md:space-x-6 px-1 sm:px-2 pt-4 md:pt-6 scrollbar-hide"
         >
           {isLoading && <p className="text-white">Cargando...</p>}
           {error && <p className="text-red-500">{error}</p>}
@@ -247,10 +258,10 @@ function HomePage() {
           onClick={() => {
             scrollRight(movieListsCarouselRef);
           }}
-          className=" absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 text-white p-2 rounded-full hover:bg-black/80 transition-all"
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 text-white p-1 sm:p-2 rounded-full hover:bg-black/80 transition-all"
           aria-label="Scroll Right"
         >
-          <FontAwesomeIcon icon={faChevronRight} size="lg" />
+          <FontAwesomeIcon icon={faChevronRight} size="sm" className="sm:text-lg" />
         </button>
       </div>
       {/* Fin Carousel de Movie Lists */}
