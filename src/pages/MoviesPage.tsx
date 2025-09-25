@@ -1,18 +1,26 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import CategoryButton from "../components/ui/CategoryButton";
 import {
   faStar,
-  faVideoCamera,
+  faFilmSimple,
   faMedal,
   faCalendarDays,
+  faGreaterThan,
 } from "@fortawesome/free-solid-svg-icons";
 import type { MovieListsResult } from "../types/movieLists.types";
 import { movieListsService } from "../services/movieListsService";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const apiImageUrl = import.meta.env.VITE_API_IMAGE_URL;
 function MoviesPage() {
   // Variable para guardar lista de películas según la categoría que seleccione el usuario
   const [moviesList, setMoviesList] = useState<MovieListsResult[]>();
+
+  // Variable para guardar número de páginas total
+  const [totalPages, setTotalPages] = useState<number>(0);
+
+  // Variable para guardar número actual de página
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   // Variables para estado de carga y mensajes de errores
   const [isLoading, setIsLoading] = useState(false);
@@ -25,9 +33,10 @@ function MoviesPage() {
   // Función para obtener películas en cartelera desde la API
   const fetchNowPlayingMovies = async () => {
     try {
-      const response = await movieListsService.getPopular();
+      const response = await movieListsService.getNowPlaying();
       const data = response.results;
       setMoviesList(data);
+      setTotalPages(response.total_pages);
     } catch (err) {
       setError("Error al obtener películas populares.");
       console.error(err);
@@ -39,9 +48,10 @@ function MoviesPage() {
   // Función para obtener películas populares desde la API
   const fetchPopularMovies = async () => {
     try {
-      const response = await movieListsService.getNowPlaying();
+      const response = await movieListsService.getPopular();
       const data = response.results;
       setMoviesList(data);
+      setTotalPages(response.total_pages);
     } catch (err) {
       setError("Error al obtener películas en Cartelera.");
       console.error(err);
@@ -56,6 +66,7 @@ function MoviesPage() {
       const response = await movieListsService.getTopRated();
       const data = response.results;
       setMoviesList(data);
+      setTotalPages(response.total_pages);
     } catch (err) {
       setError("Error al obtener películas Más valoradas.");
       console.error(err);
@@ -70,6 +81,7 @@ function MoviesPage() {
       const response = await movieListsService.getUpcoming();
       const data = response.results;
       setMoviesList(data);
+      setTotalPages(response.total_pages);
     } catch (err) {
       setError("Error al obtener películas Próximamente.");
       console.error(err);
@@ -86,7 +98,7 @@ function MoviesPage() {
       <div className="flex flex-wrap gap-x-20 gap-y-10 justify-center md:py-10">
         <CategoryButton
           title="En Cartelera"
-          icon={faVideoCamera}
+          icon={faFilmSimple}
           onClick={fetchNowPlayingMovies}
         />
         <CategoryButton
@@ -126,6 +138,21 @@ function MoviesPage() {
             />
           </div>
         ))}
+      </div>
+
+      {/* PAGINADOR */}
+      <div className="mt-20 text-white flex gap-20 justify-center items-center">
+        <button>Anterior</button>
+        <div className="flex gap-2">
+          <p>página</p>
+          <p>{currentPage}</p>
+          <p>-</p>
+          <p>{totalPages}</p>
+        </div>
+        <button>
+          Siguiente
+          <FontAwesomeIcon icon={faGreaterThan} className="ml-2 text-sm" />
+        </button>
       </div>
     </div>
   );

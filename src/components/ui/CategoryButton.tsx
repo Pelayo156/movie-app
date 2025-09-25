@@ -15,7 +15,7 @@ function CategoryButton(props: Props) {
     >
       <div
         className="flex flex-col items-center justify-center
-                 p-8 sm:p-10 md:px-10 md:py-12
+                 p-8 sm:p-10 md:px-10 md:py-10
                  bg-gray-800 text-white text-xl font-semibold rounded-full cursor-pointer
                  border-2 border-transparent
                  hover:border-white/80
