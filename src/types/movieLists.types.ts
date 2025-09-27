@@ -33,9 +33,16 @@ export interface APITmdbMovieListsNowPlayingResponse {
   total_results: number;
 }
 
+// Tipo para lista de películas en general
+export interface APITmdbMovieListsGeneral {
+  results: Result[];
+  total_pages: number;
+}
+
 export interface Dates {
   maximum: Date;
   minimum: Date;
 }
 
 export type MovieListsResult = Result;
+export type Categories = "now_playing" | "popular" | "top_rated" | "upcoming";

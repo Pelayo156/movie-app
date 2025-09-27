@@ -9,7 +9,7 @@ import {
   faGreaterThan,
   faLessThan,
 } from "@fortawesome/free-solid-svg-icons";
-import type { MovieListsResult } from "../types/movieLists.types";
+import type { MovieListsResult, Categories } from "../types/movieLists.types";
 import { movieListsService } from "../services/movieListsService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -17,6 +17,10 @@ const apiImageUrl = import.meta.env.VITE_API_IMAGE_URL;
 function MoviesPage() {
   // Variable para guardar lista de películas según la categoría que seleccione el usuario
   const [moviesList, setMoviesList] = useState<MovieListsResult[]>();
+
+  // Variable para almacenar categoría actual
+  const [currentCategory, setCurrentCategory] =
+    useState<Categories>("now_playing");
 
   // Variable para guardar número de páginas total
   const [totalPages, setTotalPages] = useState<number>(0);
@@ -29,16 +33,18 @@ function MoviesPage() {
   const [error, setError] = useState<String | null>(null);
 
   useEffect(() => {
-    fetchNowPlayingMovies();
-  }, []);
+    fetchMoviesByCategory(currentCategory, currentPage);
+  }, [currentCategory, currentPage]);
 
-  // Función para obtener películas en cartelera desde la API
-  const fetchNowPlayingMovies = async () => {
+  const fetchMoviesByCategory = async (category: string, page: number) => {
     try {
-      const response = await movieListsService.getNowPlaying(currentPage);
-      const data = response.results;
-      setMoviesList(data);
-      setTotalPages(response.total_pages);
+      const response = await movieListsService.getMoviesByCategory(
+        category,
+        page
+      );
+      const data = response;
+      setMoviesList(data.results);
+      setTotalPages(data.total_pages);
     } catch (err) {
       setError("Error al obtener películas populares.");
       console.error(err);
@@ -47,49 +53,10 @@ function MoviesPage() {
     }
   };
 
-  // Función para obtener películas populares desde la API
-  const fetchPopularMovies = async () => {
-    try {
-      const response = await movieListsService.getPopular(currentPage);
-      const data = response.results;
-      setMoviesList(data);
-      setTotalPages(response.total_pages);
-    } catch (err) {
-      setError("Error al obtener películas en Cartelera.");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Función para obtener películas más valoradas desde la API
-  const fetchTopRatedMovies = async () => {
-    try {
-      const response = await movieListsService.getTopRated(currentPage);
-      const data = response.results;
-      setMoviesList(data);
-      setTotalPages(response.total_pages);
-    } catch (err) {
-      setError("Error al obtener películas Más valoradas.");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Función para obtener películas próximamente desde la API
-  const fetchUpcomingMovies = async () => {
-    try {
-      const response = await movieListsService.getUpcoming(currentPage);
-      const data = response.results;
-      setMoviesList(data);
-      setTotalPages(response.total_pages);
-    } catch (err) {
-      setError("Error al obtener películas Próximamente.");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
+  // Función para cambiar de categoría
+  const changeCategory = (category: Categories) => {
+    setCurrentCategory(category);
+    setCurrentPage(1);
   };
 
   return (
@@ -102,22 +69,22 @@ function MoviesPage() {
         <CategoryButton
           title="En Cartelera"
           icon={faFilmSimple}
-          onClick={fetchNowPlayingMovies}
+          onClick={() => changeCategory("now_playing")}
         />
         <CategoryButton
           title="Popular"
           icon={faStar}
-          onClick={fetchPopularMovies}
+          onClick={() => changeCategory("popular")}
         />
         <CategoryButton
           title="Más Valorado"
           icon={faMedal}
-          onClick={fetchTopRatedMovies}
+          onClick={() => changeCategory("top_rated")}
         />
         <CategoryButton
           title="Próximamente"
           icon={faCalendarDays}
-          onClick={fetchUpcomingMovies}
+          onClick={() => changeCategory("upcoming")}
         />
       </div>
 
@@ -146,8 +113,12 @@ function MoviesPage() {
       </div>
 
       {/* PAGINADOR */}
-      <div className="mt-20 text-white flex gap-20 justify-center items-center">
-        <button className="font-bold">
+      <div className="mt-20 text-white/80 flex gap-20 justify-center items-center">
+        <button
+          className={`font-bold ${currentPage > 1 && "hover:text-white"}`}
+          disabled={currentPage <= 1}
+          onClick={() => setCurrentPage(currentPage - 1)}
+        >
           <FontAwesomeIcon icon={faLessThan} className="mr-2 text-sm" />
           Anterior
         </button>
@@ -157,7 +128,13 @@ function MoviesPage() {
           <p>-</p>
           <p>{totalPages}</p>
         </div>
-        <button className="font-bold">
+        <button
+          className={`font-bold ${
+            currentPage < totalPages && "hover:text-white"
+          }`}
+          disabled={currentPage >= totalPages}
+          onClick={() => setCurrentPage(currentPage + 1)}
+        >
           Siguiente
           <FontAwesomeIcon icon={faGreaterThan} className="ml-2 text-sm" />
         </button>

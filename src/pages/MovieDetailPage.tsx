@@ -169,8 +169,8 @@ function MovieDetailPage() {
             Reparto
           </h2>
           {/* Grid de reparto - Ajustamos columnas para que no se apilen demasiado en móvil, pero aprovechen el espacio */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 md:gap-6">
-            {movieCredits?.cast.slice(0, 7).map((actor) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 gap-4 md:gap-6">
+            {movieCredits?.cast.slice(0, 5).map((actor) => (
               <div
                 key={actor.id}
                 className="bg-white rounded-lg md:rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
