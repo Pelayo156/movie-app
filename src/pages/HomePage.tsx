@@ -33,9 +33,7 @@ function HomePage() {
   const [error, setError] = useState<String | null>(null);
 
   // Variable para guardar película que se mostrará en el poster inicial
-  const posterMovie = trendingItems.at(
-    Math.floor(Math.random() * trendingItems.length)
-  );
+  const posterMovie = trendingItems.length > 0 ? trendingItems[7] : null;
 
   useEffect(() => {
     // Obtener películas en tendencia
@@ -106,7 +104,7 @@ function HomePage() {
   };
 
   return (
-    <div className="bg-gray-950 mt-20">
+    <div className="bg-gray-950">
       {/* Inicio Poster Principal */}
       <div
         // h-[75vh] es un buen punto de partida, pero podemos ajustarlo para pantallas más pequeñas
@@ -172,7 +170,11 @@ function HomePage() {
           className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 text-white p-1 sm:p-2 rounded-full hover:bg-black/80 transition-all"
           aria-label="Scroll Left"
         >
-          <FontAwesomeIcon icon={faChevronLeft} size="sm" className="sm:text-lg" />
+          <FontAwesomeIcon
+            icon={faChevronLeft}
+            size="sm"
+            className="sm:text-lg"
+          />
         </button>
         <div
           ref={trendingCarouselRef}
@@ -212,7 +214,11 @@ function HomePage() {
           className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 text-white p-1 sm:p-2 rounded-full hover:bg-black/80 transition-all"
           aria-label="Scroll Right"
         >
-          <FontAwesomeIcon icon={faChevronRight} size="sm" className="sm:text-lg" />
+          <FontAwesomeIcon
+            icon={faChevronRight}
+            size="sm"
+            className="sm:text-lg"
+          />
         </button>
       </div>
       {/* Fin Carousel de Tendencias */}
@@ -231,7 +237,11 @@ function HomePage() {
           className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 text-white p-1 sm:p-2 rounded-full hover:bg-black/80 transition-all"
           aria-label="Scroll Left"
         >
-          <FontAwesomeIcon icon={faChevronLeft} size="sm" className="sm:text-lg" />
+          <FontAwesomeIcon
+            icon={faChevronLeft}
+            size="sm"
+            className="sm:text-lg"
+          />
         </button>
         <div
           ref={movieListsCarouselRef}
@@ -261,7 +271,11 @@ function HomePage() {
           className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 text-white p-1 sm:p-2 rounded-full hover:bg-black/80 transition-all"
           aria-label="Scroll Right"
         >
-          <FontAwesomeIcon icon={faChevronRight} size="sm" className="sm:text-lg" />
+          <FontAwesomeIcon
+            icon={faChevronRight}
+            size="sm"
+            className="sm:text-lg"
+          />
         </button>
       </div>
       {/* Fin Carousel de Movie Lists */}

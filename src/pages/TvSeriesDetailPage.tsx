@@ -37,7 +37,7 @@ function TvSeriesDetailPage() {
   }, [tvSerieId]);
 
   return (
-    <div className="mt-20">
+    <div>
       {/* Inicio Poster Principal */}
       <PosterDetail
         backdrop_path={tvSerieDetail?.backdrop_path}

@@ -1,6 +1,5 @@
 import { use, useEffect, useState } from "react";
 import CategoryButton from "../components/ui/CategoryButton";
-import { Link } from "react-router-dom";
 import {
   faStar,
   faFilmSimple,
@@ -12,8 +11,9 @@ import {
 import type { MovieListsResult, Categories } from "../types/movieLists.types";
 import { movieListsService } from "../services/movieListsService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import ListCard from "../components/ui/ListCard";
+import ListCardSkeleton from "../components/ui/ListCardSkeleton";
 
-const apiImageUrl = import.meta.env.VITE_API_IMAGE_URL;
 function MoviesPage() {
   // Variable para guardar lista de películas según la categoría que seleccione el usuario
   const [moviesList, setMoviesList] = useState<MovieListsResult[]>();
@@ -37,6 +37,7 @@ function MoviesPage() {
   }, [currentCategory, currentPage]);
 
   const fetchMoviesByCategory = async (category: string, page: number) => {
+    setIsLoading(true);
     try {
       const response = await movieListsService.getMoviesByCategory(
         category,
@@ -59,8 +60,13 @@ function MoviesPage() {
     setCurrentPage(1);
   };
 
+  const handlePageSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedPage = Number(event.target.value);
+    setCurrentPage(selectedPage);
+  };
+
   return (
-    <div className="bg-gray-950 mt-20 pt-10 min-h-screen">
+    <div className="bg-gray-950 pt-10 min-h-screen">
       {/* TÍTULO */}
       <div className="text-white text-5xl text-center">Películas</div>
 
@@ -88,57 +94,67 @@ function MoviesPage() {
         />
       </div>
 
-      {/* LISTA DE PELÍCULAS */}
-      <div className="mt-5 flex flex-wrap justify-center gap-10">
-        {moviesList?.map((movie) => (
-          <Link to={`/movie/${movie.id}`} key={movie.id}>
-            <div
-              className="w-40 sm:w-44 md:w-48 lg:w-52 xl:w-56
-                        rounded-xl border-2 border-transparent 
-                        hover:border-2 hover:border-white hover:scale-105 
-                        transform transition-all duration-300 ease-in-out cursor-pointer"
-            >
-              <img
-                src={
-                  movie.poster_path
-                    ? `${apiImageUrl}/w300/${movie.poster_path}`
-                    : "https://via.placeholder.com/500x750?text=No+Image"
-                }
-                alt={movie.title}
-                className="w-full h-auto object-cover rounded-xl"
-              />
-            </div>
-          </Link>
-        ))}
+      <div className="min-h-[90vh]">
+        {/* LISTA DE PELÍCULAS */}
+        <div
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6
+         2xl:grid-cols-8 gap-x-5 gap-y-10 justify-items-center px-4"
+        >
+          {isLoading
+            ? Array.from({ length: 20 }).map((_, index) => (
+                <ListCardSkeleton key={index} />
+              ))
+            : moviesList?.map((movie) => (
+                <ListCard
+                  id={movie.id}
+                  title={movie.title}
+                  poster_path={movie.poster_path}
+                />
+              ))}
+        </div>
       </div>
 
       {/* PAGINADOR */}
-      <div className="mt-20 text-white/80 flex gap-20 justify-center items-center">
-        <button
-          className={`font-bold ${currentPage > 1 && "hover:text-white"}`}
-          disabled={currentPage <= 1}
-          onClick={() => setCurrentPage(currentPage - 1)}
-        >
-          <FontAwesomeIcon icon={faLessThan} className="mr-2 text-sm" />
-          Anterior
-        </button>
-        <div className="flex gap-2 font-bold">
-          <p>página</p>
-          <p>{currentPage}</p>
-          <p>-</p>
-          <p>{totalPages}</p>
+      {!isLoading && totalPages > 1 && (
+        <div className="mt-20 pb-10 text-white/80 flex gap-10 md:gap-20 justify-center items-center">
+          <button
+            className={`font-bold ${currentPage > 1 && "hover:text-white"} disabled:opacity-50 disabled:cursor-not-allowed`}
+            disabled={currentPage <= 1}
+            onClick={() => setCurrentPage(currentPage - 1)}
+          >
+            <FontAwesomeIcon icon={faLessThan} className="mr-2 text-sm" />
+            Anterior
+          </button>
+
+          <div className="flex items-center gap-3 font-bold">
+            <span>Página</span>
+            <select
+              value={currentPage}
+              onChange={handlePageSelect}
+              className="bg-gray-800 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block cursor-pointer"
+              aria-label="Seleccionar página"
+            >
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (pageNumber) => (
+                  <option key={pageNumber} value={pageNumber}>
+                    {pageNumber}
+                  </option>
+                )
+              )}
+            </select>
+            <span>de {totalPages}</span>
+          </div>
+          
+          <button
+            className={`font-bold ${currentPage < totalPages && "hover:text-white"} disabled:opacity-50 disabled:cursor-not-allowed`}
+            disabled={currentPage >= totalPages}
+            onClick={() => setCurrentPage(currentPage + 1)}
+          >
+            Siguiente
+            <FontAwesomeIcon icon={faGreaterThan} className="ml-2 text-sm" />
+          </button>
         </div>
-        <button
-          className={`font-bold ${
-            currentPage < totalPages && "hover:text-white"
-          }`}
-          disabled={currentPage >= totalPages}
-          onClick={() => setCurrentPage(currentPage + 1)}
-        >
-          Siguiente
-          <FontAwesomeIcon icon={faGreaterThan} className="ml-2 text-sm" />
-        </button>
-      </div>
+      )}
     </div>
   );
 }
