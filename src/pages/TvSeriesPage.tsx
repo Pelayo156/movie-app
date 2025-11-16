@@ -1,26 +1,28 @@
-import { use, useEffect, useState } from "react";
 import CategoryButton from "../components/ui/CategoryButton";
+import { useState, useEffect } from "react";
+import { tvSeriesListsService } from "../services/tvSeriesListsService";
 import {
   faStar,
   faFilmSimple,
   faMedal,
-  faCalendarDays,
   faGreaterThan,
   faLessThan,
 } from "@fortawesome/free-solid-svg-icons";
-import type { MovieListsResult, Categories } from "../types/movieLists.types";
-import { movieListsService } from "../services/movieListsService";
+import type {
+  ResultTvSeriesLists,
+  Categories,
+} from "../types/tvSeriesLists.types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ListCard from "../components/ui/ListCard";
 import ListCardSkeleton from "../components/ui/ListCardSkeleton";
 
-function MoviesPage() {
-  // Variable para guardar lista de películas según la categoría que seleccione el usuario
-  const [moviesList, setMoviesList] = useState<MovieListsResult[]>();
+function TvSeriesPage() {
+  // Variable para guardar lista de tv series según categoría seleccionada por el usuario
+  const [tvSeriesList, setTvSeriesList] = useState<ResultTvSeriesLists[]>();
 
   // Variable para almacenar categoría actual
   const [currentCategory, setCurrentCategory] =
-    useState<Categories>("now_playing");
+    useState<Categories>("airing_today");
 
   // Variable para guardar número de páginas total
   const [totalPages, setTotalPages] = useState<number>(0);
@@ -33,18 +35,18 @@ function MoviesPage() {
   const [error, setError] = useState<String | null>(null);
 
   useEffect(() => {
-    fetchMoviesByCategory(currentCategory, currentPage);
+    fetchTvSeriesByCategory(currentCategory, currentPage);
   }, [currentCategory, currentPage]);
 
-  const fetchMoviesByCategory = async (category: string, page: number) => {
+  const fetchTvSeriesByCategory = async (category: string, page: number) => {
     setIsLoading(true);
     try {
-      const response = await movieListsService.getMoviesByCategory(
+      const response = await tvSeriesListsService.getTvSerieByCategory(
         category,
         page
       );
       const data = response;
-      setMoviesList(data.results);
+      setTvSeriesList(data.results);
       setTotalPages(data.total_pages);
     } catch (err) {
       setError("Error al obtener películas populares.");
@@ -68,14 +70,14 @@ function MoviesPage() {
   return (
     <div className="bg-gray-950 pt-10 min-h-screen">
       {/* TÍTULO */}
-      <div className="text-white text-5xl text-center">Películas</div>
+      <div className="text-white text-5xl text-center">TV Shows</div>
 
       {/* CATEGORÍAS */}
       <div className="flex flex-wrap gap-x-20 gap-y-10 justify-center md:py-10">
         <CategoryButton
-          title="En Cartelera"
+          title="Al Aire"
           icon={faFilmSimple}
-          onClick={() => changeCategory("now_playing")}
+          onClick={() => changeCategory("airing_today")}
         />
         <CategoryButton
           title="Popular"
@@ -86,11 +88,6 @@ function MoviesPage() {
           title="Más Valorado"
           icon={faMedal}
           onClick={() => changeCategory("top_rated")}
-        />
-        <CategoryButton
-          title="Próximamente"
-          icon={faCalendarDays}
-          onClick={() => changeCategory("upcoming")}
         />
       </div>
 
@@ -104,12 +101,12 @@ function MoviesPage() {
             ? Array.from({ length: 20 }).map((_, index) => (
                 <ListCardSkeleton key={index} />
               ))
-            : moviesList?.map((movie) => (
+            : tvSeriesList?.map((tvSerie) => (
                 <ListCard
-                  id={movie.id}
-                  title={movie.title}
-                  poster_path={movie.poster_path}
-                  content_type="movie"
+                  id={tvSerie.id}
+                  title={tvSerie.name}
+                  poster_path={tvSerie.poster_path}
+                  content_type="tv"
                 />
               ))}
         </div>
@@ -163,4 +160,4 @@ function MoviesPage() {
     </div>
   );
 }
-export default MoviesPage;
+export default TvSeriesPage;

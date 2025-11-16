@@ -5,6 +5,7 @@ type Props = {
   id: number;
   title: string;
   poster_path: string;
+  content_type: string;
 };
 
 const apiImageUrl = import.meta.env.VITE_API_IMAGE_URL;
@@ -16,7 +17,7 @@ function ListCard(props: Props) {
   };
 
   return (
-    <Link to={`/movie/${props.id}`} key={props.id}>
+    <Link to={`/${props.content_type}/${props.id}`} key={props.id}>
       <div
         className="w-40 sm:w-44 md:w-48 lg:w-52 xl:w-56
                         rounded-xl border-2 border-transparent 
