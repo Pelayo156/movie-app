@@ -8,6 +8,7 @@ import MoviesDetailPage from "./pages/MovieDetailPage.tsx";
 import TvSeriesDetailPage from "./pages/TvSeriesDetailPage.tsx";
 import MoviesPage from "./pages/MoviesPage.tsx";
 import TvSeriesPage from "./pages/TvSeriesPage.tsx";
+import CelebritiesPage from "./pages/CelebritiesPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
       {
         path: "tv",
         element: <TvSeriesPage />,
+      },
+      {
+        path: "celebrities",
+        element: <CelebritiesPage />,
       },
     ],
   },
