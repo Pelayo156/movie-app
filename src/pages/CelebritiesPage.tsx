@@ -60,17 +60,14 @@ function CelebritiesPage() {
         </div>
       </div>
 
-      <div className="mt-10 grid grid-cols-8 gap-4 overflow-scroll">
-        {/* TABLA CELEBRIDADES */}
+      {/* TABLA CELEBRIDADES */}
+      <div className="mt-10 grid grid-cols-8 overflow-scroll">
         <div className=""></div>
         {celebritiesList?.map((celebritie) => (
-          <div className="p-4 col-start-2 col-span-6 bg-gray-100/10 rounded-lg">
+          <div className="p-4 col-start-2 col-span-6 bg-white/75 border-b-2 border-black/70">
             {celebritie.name}
           </div>
         ))}
-        <div className="p-4 mt-10 col-start-2 col-span-4 bg-gray-100/10">
-          <table></table>
-        </div>
       </div>
     </div>
   );
