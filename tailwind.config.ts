@@ -11,9 +11,12 @@ export default {
   theme: {
     extend: {
       maxWidth: {
-        '9/10': '90%',
-      }
-    },
+        '9/10': '90%'
+      },
+      screens: {
+        '3xl': '1700px'
+      },
+    }
   },
   plugins: [
     plugin(function({ addUtilities }) {
