@@ -29,13 +29,13 @@ export interface KnownFor {
   original_language: string;
   genre_ids: number[];
   popularity: number;
-  first_air_date?: Date;
+  first_air_date?: String;
   vote_average: number;
   vote_count: number;
   origin_country?: string[];
   title?: string;
   original_title?: string;
-  release_date?: Date;
+  release_date?: String;
   video?: boolean;
 }
 

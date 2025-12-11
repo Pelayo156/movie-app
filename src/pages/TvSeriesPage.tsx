@@ -95,7 +95,7 @@ function TvSeriesPage() {
         {/* LISTA DE PELÍCULAS */}
         <div
           className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6
-         2xl:grid-cols-8 gap-x-5 gap-y-10 justify-items-center px-4"
+                     3xl:grid-cols-8 gap-x-5 gap-y-10 justify-items-center px-4"
         >
           {isLoading
             ? Array.from({ length: 20 }).map((_, index) => (
