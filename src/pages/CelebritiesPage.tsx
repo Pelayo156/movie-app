@@ -1,10 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faMagnifyingGlass,
-  faStar,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faMagnifyingGlass, faStar } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import type { ResultPeople } from "../types/peopleLists.types";
 import { peopleListsService } from "../services/peopleListsService";
 
@@ -24,8 +21,6 @@ function CelebritiesPage() {
     const fetchCelebritiesList = async () => {
       setIsLoading(true);
       setError(null);
-
-      console.log("hola");
 
       try {
         const response = await peopleListsService.getPopularPeople(currentPage);
@@ -84,9 +79,12 @@ function CelebritiesPage() {
               />
 
               <div className="flex flex-col gap-1">
-                <span className="text-white font-semibold text-lg hover:text-white/85 hover:cursor-pointer">
+                <Link
+                  to={`/celebritie/${celebritie.id}`}
+                  className="text-white font-semibold text-lg hover:text-white/85 hover:cursor-pointer"
+                >
                   {celebritie.name}
-                </span>
+                </Link>
                 <div className="flex items-center gap-2">
                   <span className="text-white text-md">
                     {celebritie.known_for_department}

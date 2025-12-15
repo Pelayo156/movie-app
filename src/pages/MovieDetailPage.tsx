@@ -13,6 +13,7 @@ import PosterDetail from "../components/layouts/PosterDetail";
 import TextDetail from "../components/layouts/TextDetail";
 import TrailerModal from "../components/ui/TrailerModal";
 import { capitalize } from "../utils/textUtils";
+import { Link } from "react-router-dom";
 
 const apiImageUrl = import.meta.env.VITE_API_IMAGE_URL;
 function MovieDetailPage() {
@@ -171,7 +172,8 @@ function MovieDetailPage() {
           {/* Grid de reparto - Ajustamos columnas para que no se apilen demasiado en móvil, pero aprovechen el espacio */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 gap-4 md:gap-6">
             {movieCredits?.cast.slice(0, 5).map((actor) => (
-              <div
+              <Link
+                to={`/celebritie/${actor.id}`}
                 key={actor.id}
                 className="bg-white rounded-lg md:rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
               >
@@ -195,7 +197,7 @@ function MovieDetailPage() {
                     {actor.name}
                   </h3>
                 </div>
-              </div>
+              </Link>
             ))}
             {/* "Ver más" - Aseguramos que se vea bien en todas las pantallas */}
             <div className="flex justify-center items-center gap-1 underline text-sm md:text-base">
