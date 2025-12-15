@@ -9,6 +9,7 @@ import TvSeriesDetailPage from "./pages/TvSeriesDetailPage.tsx";
 import MoviesPage from "./pages/MoviesPage.tsx";
 import TvSeriesPage from "./pages/TvSeriesPage.tsx";
 import CelebritiesPage from "./pages/CelebritiesPage.tsx";
+import CelebritieDetailPage from "./pages/CelebritieDetailPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
       {
         path: "celebrities",
         element: <CelebritiesPage />,
+      },
+      {
+        path: "celebritie/:id",
+        element: <CelebritieDetailPage />,
       },
     ],
   },
