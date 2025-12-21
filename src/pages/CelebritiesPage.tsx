@@ -1,5 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass, faStar } from "@fortawesome/free-solid-svg-icons";
+import {
+  faMagnifyingGlass,
+  faStar,
+  faGreaterThan,
+  faLessThan,
+} from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { ResultPeople } from "../types/peopleLists.types";
@@ -9,6 +14,9 @@ const apiImageUrl = import.meta.env.VITE_API_IMAGE_URL;
 function CelebritiesPage() {
   // Lista para guardar celebridades
   const [celebritiesList, setCelebritiesList] = useState<ResultPeople[]>();
+
+  // Variable para guardar número de páginas total
+  const [totalPages, setTotalPages] = useState<number>(2);
 
   // Variable para llevar la cuenta de la página actual
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -24,8 +32,14 @@ function CelebritiesPage() {
 
       try {
         const response = await peopleListsService.getPopularPeople(currentPage);
-        const data = response.results;
-        setCelebritiesList(data);
+        const data = response;
+        setCelebritiesList(data.results);
+
+        if (data.total_pages > 100) {
+          setTotalPages(100);
+        } else {
+          setTotalPages(data.total_pages);
+        }
       } catch (err) {
         setError("Error al obtener lista de celebridades.");
         console.error(err);
@@ -34,7 +48,12 @@ function CelebritiesPage() {
       }
     };
     fetchCelebritiesList();
-  }, []);
+  }, [currentPage]);
+
+  const handlePageSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedPage = Number(event.target.value);
+    setCurrentPage(selectedPage);
+  };
 
   return (
     <div className="bg-gray-950 pt-10 min-h-screen">
@@ -127,6 +146,52 @@ function CelebritiesPage() {
           </div>
         ))}
       </div>
+
+      {/* PAGINADOR */}
+      {!isLoading && totalPages > 1 && (
+        <div className="mt-20 pb-10 text-white/80 flex gap-10 md:gap-20 justify-center items-center">
+          <button
+            className={`font-bold ${
+              currentPage > 1 && "hover:text-white"
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
+            disabled={currentPage <= 1}
+            onClick={() => setCurrentPage(currentPage - 1)}
+          >
+            <FontAwesomeIcon icon={faLessThan} className="mr-2 text-sm" />
+            Anterior
+          </button>
+
+          <div className="flex items-center gap-3 font-bold">
+            <span>Página</span>
+            <select
+              value={currentPage}
+              onChange={handlePageSelect}
+              className="bg-gray-800 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block cursor-pointer"
+              aria-label="Seleccionar página"
+            >
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (pageNumber) => (
+                  <option key={pageNumber} value={pageNumber}>
+                    {pageNumber}
+                  </option>
+                )
+              )}
+            </select>
+            <span>de {totalPages}</span>
+          </div>
+
+          <button
+            className={`font-bold ${
+              currentPage < totalPages && "hover:text-white"
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
+            disabled={currentPage >= totalPages}
+            onClick={() => setCurrentPage(currentPage + 1)}
+          >
+            Siguiente
+            <FontAwesomeIcon icon={faGreaterThan} className="ml-2 text-sm" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
