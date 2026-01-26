@@ -1,3 +1,4 @@
+// TIPOS PARA DETAILS
 export interface APITmdbTVSeriesResponse {
   adult: boolean;
   backdrop_path: string;
@@ -91,3 +92,24 @@ export interface SpokenLanguage {
   iso_639_1: string;
   name: string;
 }
+
+// TIPOS PARA VIDEOS
+export interface APITmdbTVSeriesVideosResponse {
+  id: number;
+  results: VideoResult[];
+}
+
+export interface VideoResult {
+  iso_639_1: string;
+  iso_3166_1: string;
+  name: string;
+  key: string;
+  site: string;
+  size: number;
+  type: Type;
+  official: boolean;
+  published_at: Date;
+  id: string;
+}
+
+export type Type = "Featurette" | "Trailer" | "Teaser";

@@ -8,11 +8,17 @@ import {
   faPlus,
   faBars,
   faTimes,
+  faRightToBracket,
 } from "@fortawesome/free-solid-svg-icons"; // Importa faBars y faTimes
 import logoUrl from "../../assets/logo3.png";
+import { authenticationService } from "../../services/authenticationService";
+import type { APITmdbCreateNewTokenResponse } from "../../types/authentication.types";
 
 function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Estado para el menú móvil
+
+  const [requestToken, setRequestToken] =
+    useState<APITmdbCreateNewTokenResponse>();
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -20,6 +26,15 @@ function Navbar() {
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+  };
+
+  const login = async () => {
+    // Se pide un token de ingreso
+    const response = await authenticationService.createRequestToken();
+    setRequestToken(response);
+
+    // Se guarda token en localStorage
+    sessionStorage.setItem("request_token", response.request_token);
   };
 
   return (
@@ -57,12 +72,9 @@ function Navbar() {
       <div className="hidden md:flex space-x-3">
         {" "}
         <FontAwesomeIcon
-          icon={faPlus}
-          className="text-white text-xl cursor-pointer"
-        />
-        <FontAwesomeIcon
-          icon={faUser}
-          className="text-white text-xl cursor-pointer"
+          icon={faRightToBracket}
+          className="text-white text-xl cursor-pointer hover:text-gray-300"
+          onClick={login}
         />
       </div>
 

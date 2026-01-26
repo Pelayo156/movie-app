@@ -10,6 +10,7 @@ import MoviesPage from "./pages/MoviesPage.tsx";
 import TvSeriesPage from "./pages/TvSeriesPage.tsx";
 import CelebritiesPage from "./pages/CelebritiesPage.tsx";
 import CelebritieDetailPage from "./pages/CelebritieDetailPage.tsx";
+import AuthCallBack from "./pages/AuthCallBack.tsx";
 
 const router = createBrowserRouter([
   {
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
       {
         path: "celebritie/:id",
         element: <CelebritieDetailPage />,
+      },
+      {
+        path: "auth/callBack",
+        element: <AuthCallBack />,
       },
     ],
   },
