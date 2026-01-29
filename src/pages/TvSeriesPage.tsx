@@ -15,6 +15,7 @@ import type {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ListCard from "../components/ui/ListCard";
 import ListCardSkeleton from "../components/ui/ListCardSkeleton";
+import SearchBar from "../components/ui/SearchBar";
 
 function TvSeriesPage() {
   // Variable para guardar lista de tv series según categoría seleccionada por el usuario
@@ -43,7 +44,7 @@ function TvSeriesPage() {
     try {
       const response = await tvSeriesListsService.getTvSerieByCategory(
         category,
-        page
+        page,
       );
       const data = response;
       setTvSeriesList(data.results);
@@ -71,6 +72,8 @@ function TvSeriesPage() {
     <div className="bg-gray-950 pt-10 min-h-screen">
       {/* TÍTULO */}
       <div className="text-white text-5xl text-center">TV Shows</div>
+
+      <SearchBar />
 
       {/* CATEGORÍAS */}
       <div className="flex flex-wrap gap-x-20 gap-y-10 justify-center md:py-10">
@@ -139,7 +142,7 @@ function TvSeriesPage() {
                   <option key={pageNumber} value={pageNumber}>
                     {pageNumber}
                   </option>
-                )
+                ),
               )}
             </select>
             <span>de {totalPages}</span>

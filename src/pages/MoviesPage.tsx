@@ -13,6 +13,7 @@ import { movieListsService } from "../services/movieListsService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ListCard from "../components/ui/ListCard";
 import ListCardSkeleton from "../components/ui/ListCardSkeleton";
+import SearchBar from "../components/ui/SearchBar";
 
 function MoviesPage() {
   // Variable para guardar lista de películas según la categoría que seleccione el usuario
@@ -41,7 +42,7 @@ function MoviesPage() {
     try {
       const response = await movieListsService.getMoviesByCategory(
         category,
-        page
+        page,
       );
       const data = response;
       setMoviesList(data.results);
@@ -69,6 +70,8 @@ function MoviesPage() {
     <div className="bg-gray-950 pt-10 min-h-screen">
       {/* TÍTULO */}
       <div className="text-white text-5xl text-center">Películas</div>
+
+      <SearchBar />
 
       {/* CATEGORÍAS */}
       <div className="flex flex-wrap gap-x-20 gap-y-10 justify-center md:py-10">
@@ -142,7 +145,7 @@ function MoviesPage() {
                   <option key={pageNumber} value={pageNumber}>
                     {pageNumber}
                   </option>
-                )
+                ),
               )}
             </select>
             <span>de {totalPages}</span>

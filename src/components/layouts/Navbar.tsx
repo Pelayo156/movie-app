@@ -29,12 +29,27 @@ function Navbar() {
   };
 
   const login = async () => {
-    // Se pide un token de ingreso
-    const response = await authenticationService.createRequestToken();
-    setRequestToken(response);
+    try {
+      // Se pide un token de ingreso
+      const response = await authenticationService.createRequestToken();
 
-    // Se guarda token en localStorage
-    sessionStorage.setItem("request_token", response.request_token);
+      if (!response || !response.request_token) {
+        console.error("No se pudo obtener el token");
+        return;
+      }
+
+      // Se guarda token en localStorage
+      setRequestToken(response);
+      sessionStorage.setItem("request_token", response.request_token);
+
+      // URL de retorno
+      const redirectUrl = window.location.origin + "/auth/callback";
+
+      // Se redirige al usuario a login de TMDB para validar el token
+      window.location.href = `https://www.themoviedb.org/authenticate/${response.request_token}?redirect_to=${redirectUrl}`;
+    } catch (error) {
+      console.error("Error en login: ", error);
+    }
   };
 
   return (

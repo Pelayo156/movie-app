@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { ResultPeople } from "../types/peopleLists.types";
 import { peopleListsService } from "../services/peopleListsService";
+import SearchBar from "../components/ui/SearchBar";
 
 const apiImageUrl = import.meta.env.VITE_API_IMAGE_URL;
 function CelebritiesPage() {
@@ -59,25 +60,8 @@ function CelebritiesPage() {
     <div className="bg-gray-950 pt-10 min-h-screen">
       <h1 className="ml-10 text-white text-center text-5xl">Celebridades</h1>
 
-      <div className="mt-10 grid grid-cols-6 gap-4">
-        {/* BUSCADOR */}
-        <div className="col-span-4 col-start-2">
-          <input
-            type="text"
-            id="search"
-            name="search"
-            className="w-full p-4 rounded-full bg-gray-50/10 text-white font-light"
-          />
-        </div>
-        <div className="col-span-1 flex items-center">
-          <button className="p-4 bg-gray-50/10  rounded-full">
-            <FontAwesomeIcon
-              icon={faMagnifyingGlass}
-              className="text-xl text-white"
-            />
-          </button>
-        </div>
-      </div>
+      {/* BARRA DE BÚSQUEDA */}
+      <SearchBar />
 
       {/* TABLA CELEBRIDADES */}
       <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-4 w-11/12 xl:w-4/5 mx-auto">
@@ -174,7 +158,7 @@ function CelebritiesPage() {
                   <option key={pageNumber} value={pageNumber}>
                     {pageNumber}
                   </option>
-                )
+                ),
               )}
             </select>
             <span>de {totalPages}</span>
