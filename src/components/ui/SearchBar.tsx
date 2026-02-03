@@ -1,7 +1,12 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import type { Result } from "../../types/movieLists.types";
 
-function SearchBar() {
+type Props = {
+  onSearch: (text: string) => Result;
+};
+
+function SearchBar(props: Props) {
   return (
     <div className="mt-10 grid grid-cols-6 gap-4">
       {/* BUSCADOR */}
