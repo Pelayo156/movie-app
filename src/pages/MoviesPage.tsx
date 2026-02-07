@@ -10,6 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import type { MovieListsResult, Categories } from "../types/movieLists.types";
 import { movieListsService } from "../services/movieListsService";
+import { searchService } from "../services/searchService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ListCard from "../components/ui/ListCard";
 import ListCardSkeleton from "../components/ui/ListCardSkeleton";
@@ -20,8 +21,9 @@ function MoviesPage() {
   const [moviesList, setMoviesList] = useState<MovieListsResult[]>();
 
   // Variable para almacenar categoría actual
-  const [currentCategory, setCurrentCategory] =
-    useState<Categories>("now_playing");
+  const [currentCategory, setCurrentCategory] = useState<Categories | null>(
+    "now_playing"
+  );
 
   // Variable para guardar número de páginas total
   const [totalPages, setTotalPages] = useState<number>(0);
@@ -29,20 +31,28 @@ function MoviesPage() {
   // Variable para guardar número actual de página
   const [currentPage, setCurrentPage] = useState<number>(1);
 
+  // Variable para guardar texto de búsqueda ingresado por el usuario
+  const [searchText, setSearchText] = useState<string | null>(null);
+
   // Variables para estado de carga y mensajes de errores
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<String | null>(null);
 
   useEffect(() => {
-    fetchMoviesByCategory(currentCategory, currentPage);
+    searchText == null
+      ? fetchMoviesByCategory(currentCategory, currentPage)
+      : searchMoviesWithText(searchText);
   }, [currentCategory, currentPage]);
 
-  const fetchMoviesByCategory = async (category: string, page: number) => {
+  const fetchMoviesByCategory = async (
+    category: string | null,
+    page: number
+  ) => {
     setIsLoading(true);
     try {
       const response = await movieListsService.getMoviesByCategory(
-        category,
-        page,
+        category ? category : "",
+        page
       );
       const data = response;
       setMoviesList(data.results);
@@ -59,6 +69,12 @@ function MoviesPage() {
   const changeCategory = (category: Categories) => {
     setCurrentCategory(category);
     setCurrentPage(1);
+
+    // Limpiar varibales relacionadas con la búsqueda por barra
+    let userSearchText = document.getElementById("search") as HTMLInputElement;
+    userSearchText.value = "";
+
+    setSearchText(null);
   };
 
   const handlePageSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -66,12 +82,40 @@ function MoviesPage() {
     setCurrentPage(selectedPage);
   };
 
+  /*
+   * Función para buscar películas mediante alguna palabra clave
+
+   * @param text - Variable de texto utilizada para buscar películas con algún título similar
+   */
+  const searchMoviesWithText = async (
+    text: string,
+    firstSearch: boolean = false
+  ): Promise<void> => {
+    // Limpiar variables de categoría
+    setCurrentCategory(null);
+
+    let response;
+    try {
+      // Se hace el llamado a la API con el texto proporcionado por el usuario
+      response = await searchService.getSearchMovie(text, currentPage);
+    } catch (error) {
+      throw new Error(
+        `No ha sido posible obtener la lista de películas: ${error}`
+      );
+    }
+
+    if (firstSearch) setCurrentPage(1);
+    setSearchText(text);
+    setMoviesList(response.results);
+    setTotalPages(response.total_pages);
+  };
+
   return (
     <div className="bg-gray-950 pt-10 min-h-screen">
       {/* TÍTULO */}
       <div className="text-white text-5xl text-center">Películas</div>
 
-      <SearchBar />
+      <SearchBar onSearch={searchMoviesWithText} />
 
       {/* CATEGORÍAS */}
       <div className="flex flex-wrap gap-x-20 gap-y-10 justify-center md:py-10">
@@ -97,7 +141,14 @@ function MoviesPage() {
         />
       </div>
 
-      <div className="min-h-[90vh]">
+      {/* TÍTULO DE PALABRA DE BÚSQUEDA (EN EL CASO DE QUE HAYA) */}
+      {searchText != null && (
+        <span className="ml-4 text-white text-3xl font-thin" text-center>
+          Búsqueda "{searchText}"
+        </span>
+      )}
+
+      <div className="mt-4 min-h-[90vh]">
         {/* LISTA DE PELÍCULAS */}
         <div
           className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6
@@ -145,7 +196,7 @@ function MoviesPage() {
                   <option key={pageNumber} value={pageNumber}>
                     {pageNumber}
                   </option>
-                ),
+                )
               )}
             </select>
             <span>de {totalPages}</span>

@@ -99,7 +99,9 @@ function CelebritieDetailPage() {
           <h3 className="mb-5 text-3xl font-bold text-white py-2">Biografía</h3>
           <div className="space-y-4 text-lg leading-relaxed text-zinc-300">
             <p className="text-justify font-extralight">
-              {celebritieDetail?.biography}
+              {celebritieDetail?.biography
+                ? celebritieDetail.biography
+                : "No disponible"}
             </p>
           </div>
         </div>

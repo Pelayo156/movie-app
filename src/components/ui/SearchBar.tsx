@@ -1,12 +1,21 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import type { Result } from "../../types/movieLists.types";
 
 type Props = {
-  onSearch: (text: string) => Result;
+  onSearch: (text: string, isFirstSearch: boolean) => void;
 };
 
 function SearchBar(props: Props) {
+  //Función para enviar lo que escribió el usuario en el inputText a la función de búsqueda correspondiente
+  const handleSearch = () => {
+    // Obtener valor del input
+    const input = document.getElementById("search") as HTMLInputElement;
+    const searchText = input?.value || "";
+
+    // Se llama a la función entregada en las props para hacer la búsqueda
+    props.onSearch(searchText, true);
+  };
+
   return (
     <div className="mt-10 grid grid-cols-6 gap-4">
       {/* BUSCADOR */}
@@ -19,7 +28,10 @@ function SearchBar(props: Props) {
         />
       </div>
       <div className="col-span-1 flex items-center">
-        <button className="p-4 bg-gray-50/10  rounded-full">
+        <button
+          className="p-4 bg-gray-50/10  rounded-full"
+          onClick={handleSearch}
+        >
           <FontAwesomeIcon
             icon={faMagnifyingGlass}
             className="text-xl text-white"
