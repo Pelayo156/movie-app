@@ -1,6 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faMagnifyingGlass,
   faStar,
   faGreaterThan,
   faLessThan,
@@ -9,6 +8,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { ResultPeople } from "../types/peopleLists.types";
 import { peopleListsService } from "../services/peopleListsService";
+import { searchService } from "../services/searchService";
 import SearchBar from "../components/ui/SearchBar";
 
 const apiImageUrl = import.meta.env.VITE_API_IMAGE_URL;
@@ -22,34 +22,60 @@ function CelebritiesPage() {
   // Variable para llevar la cuenta de la página actual
   const [currentPage, setCurrentPage] = useState<number>(1);
 
+  // Variable para guardar texto de búsqueda ingresado por el usuario
+  const [searchText, setSearchText] = useState<string | null>(null);
+
   // Variables para estado de carga y mensajes de errores
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<String | null>(null);
 
   useEffect(() => {
-    const fetchCelebritiesList = async () => {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const response = await peopleListsService.getPopularPeople(currentPage);
-        const data = response;
-        setCelebritiesList(data.results);
-
-        if (data.total_pages > 100) {
-          setTotalPages(100);
-        } else {
-          setTotalPages(data.total_pages);
-        }
-      } catch (err) {
-        setError("Error al obtener lista de celebridades.");
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchCelebritiesList();
+    searchText == null
+      ? fetchCelebritiesList()
+      : searchPersonsWithText(searchText);
   }, [currentPage]);
+
+  const fetchCelebritiesList = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await peopleListsService.getPopularPeople(currentPage);
+      const data = response;
+      setCelebritiesList(data.results);
+
+      if (data.total_pages > 100) {
+        setTotalPages(100);
+      } else {
+        setTotalPages(data.total_pages);
+      }
+    } catch (err) {
+      setError("Error al obtener lista de celebridades.");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const searchPersonsWithText = async (
+    text: string,
+    firstSearch: boolean = false
+  ): Promise<void> => {
+    let response;
+    try {
+      // Se hace el llamado a la API con el texto proporcionado por el usuario
+      response = await searchService.getSearchPerson(text, currentPage);
+    } catch (error) {
+      throw new Error(
+        `No ha sido posible obtener la lista de películas: ${error}`
+      );
+    }
+
+    if (firstSearch) setCurrentPage(1);
+    setSearchText(text);
+    setCelebritiesList(response.results);
+    setTotalPages(response.total_pages);
+  };
 
   const handlePageSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedPage = Number(event.target.value);
@@ -61,7 +87,7 @@ function CelebritiesPage() {
       <h1 className="ml-10 text-white text-center text-5xl">Celebridades</h1>
 
       {/* BARRA DE BÚSQUEDA */}
-      <SearchBar />
+      <SearchBar onSearch={searchPersonsWithText} />
 
       {/* TABLA CELEBRIDADES */}
       <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-4 w-11/12 xl:w-4/5 mx-auto">
@@ -158,7 +184,7 @@ function CelebritiesPage() {
                   <option key={pageNumber} value={pageNumber}>
                     {pageNumber}
                   </option>
-                ),
+                )
               )}
             </select>
             <span>de {totalPages}</span>

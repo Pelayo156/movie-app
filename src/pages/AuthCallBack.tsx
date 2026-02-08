@@ -1,21 +1,88 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { authenticationService } from "../services/authenticationService";
 
 function AuthCallBack() {
+  const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const requestToken = params.get("request_token");
-    const approved = params.get("approved");
+    const handleAuth = async () => {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const requestToken = params.get("request_token");
+        const approved = params.get("approved");
 
-    console.log("Token:", requestToken);
-    console.log("¿Aprobado?:", approved);
+        console.log("Token:", requestToken);
+        console.log("¿Aprobado?:", approved);
 
-    if (approved == "true" && requestToken) {
-    }
-  }, []);
+        // Verificar que esté aprobado y tenga token
+        if (approved !== "true" || !requestToken) {
+          setError("Autenticación cancelada o token inválido");
+          setIsLoading(false);
+          return;
+        }
+
+        // 1. Crear sesión con token aprobado
+        const sessionData = await authenticationService.createSession(
+          requestToken
+        );
+
+        if (!sessionData.success) {
+          throw new Error("No se pudo crear la sesión");
+        }
+
+        const sessionId = sessionData.session_id;
+
+        // 2. Se obtiene información del usuario con sessionId recibida
+        const userData = await authenticationService.getAccountDetails(
+          sessionId
+        );
+
+        // 3. Guardar información de usuario en localStorage
+        localStorage.setItem("tmdb_session_id", sessionId);
+        localStorage.setItem("tmdb_account_id", userData.id.toString());
+        localStorage.setItem("tmdb_user", JSON.stringify(userData));
+        console.log("Autenticación exitosa");
+
+        // 4. Redirigir a usuario a página principal
+        navigate("/");
+      } catch (error) {
+        console.error("Error en autenticación: ", error);
+        setIsLoading(false);
+      }
+    };
+
+    handleAuth();
+  }, [navigate]);
 
   return (
-    <div>
-      <p>Procesando autenticación...</p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-900">
+      <div className="text-center">
+        {isLoading && !error && (
+          <>
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p className="text-white text-xl">Procesando autenticación...</p>
+          </>
+        )}
+
+        {error && (
+          <>
+            <p className="text-red-500 text-xl mb-4">{error}</p>
+            <button
+              onClick={() => navigate("/")}
+              className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            >
+              Volver a intentar
+            </button>
+          </>
+        )}
+
+        {!isLoading && !error && (
+          <p className="text-green-500 text-xl">Autenticación exitosa</p>
+        )}
+      </div>
     </div>
   );
 }

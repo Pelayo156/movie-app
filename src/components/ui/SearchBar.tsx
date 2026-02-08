@@ -29,7 +29,9 @@ function SearchBar(props: Props) {
       </div>
       <div className="col-span-1 flex items-center">
         <button
-          className="p-4 bg-gray-50/10  rounded-full"
+          className="p-4 bg-gray-50/10 rounded-full border-2 border-transparent 
+                     hover:border-2 hover:border-white/80 hover:scale-105 
+                     ease-in-out transition-colors duration-200"
           onClick={handleSearch}
         >
           <FontAwesomeIcon

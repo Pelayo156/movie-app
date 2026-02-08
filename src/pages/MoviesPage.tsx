@@ -122,21 +122,25 @@ function MoviesPage() {
         <CategoryButton
           title="En Cartelera"
           icon={faFilmSimple}
+          isActive={"now_playing" === currentCategory}
           onClick={() => changeCategory("now_playing")}
         />
         <CategoryButton
           title="Popular"
           icon={faStar}
+          isActive={"popular" === currentCategory}
           onClick={() => changeCategory("popular")}
         />
         <CategoryButton
           title="Más Valorado"
           icon={faMedal}
+          isActive={"top_rated" === currentCategory}
           onClick={() => changeCategory("top_rated")}
         />
         <CategoryButton
           title="Próximamente"
           icon={faCalendarDays}
+          isActive={"upcoming" === currentCategory}
           onClick={() => changeCategory("upcoming")}
         />
       </div>

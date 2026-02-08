@@ -43,18 +43,17 @@ function Navbar() {
       sessionStorage.setItem("request_token", response.request_token);
 
       // URL de retorno
-      const redirectUrl =
-        window.location.origin + "http://192.168.4.112:5173/auth/callback";
+      const redirectUrl = window.location.origin + "/auth/callback";
 
       // Codificar la URL para que la API de TMDB pueda reconocer ciertos caracteres, además de que es por seguridad
-      const encodeRedirectUrl = encodeURIComponent(redirectUrl);
+      //const encodeRedirectUrl = encodeURIComponent(redirectUrl);
 
       console.log(
-        `https://www.themoviedb.org/authenticate/${response.request_token}?redirect_to=${encodeRedirectUrl}`,
+        `https://www.themoviedb.org/authenticate/${response.request_token}?redirect_to=${redirectUrl}`
       );
 
       // Se redirige al usuario a login de TMDB para validar el token
-      window.location.href = `https://www.themoviedb.org/authenticate/${response.request_token}?redirect_to=${encodeRedirectUrl}`;
+      window.location.href = `https://www.themoviedb.org/authenticate/${response.request_token}?redirect_to=${redirectUrl}`;
     } catch (error) {
       console.error("Error en login: ", error);
     }

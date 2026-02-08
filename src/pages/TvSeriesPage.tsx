@@ -1,6 +1,7 @@
 import CategoryButton from "../components/ui/CategoryButton";
 import { useState, useEffect } from "react";
 import { tvSeriesListsService } from "../services/tvSeriesListsService";
+import { searchService } from "../services/searchService";
 import {
   faStar,
   faFilmSimple,
@@ -22,8 +23,9 @@ function TvSeriesPage() {
   const [tvSeriesList, setTvSeriesList] = useState<ResultTvSeriesLists[]>();
 
   // Variable para almacenar categoría actual
-  const [currentCategory, setCurrentCategory] =
-    useState<Categories>("airing_today");
+  const [currentCategory, setCurrentCategory] = useState<Categories | null>(
+    "airing_today"
+  );
 
   // Variable para guardar número de páginas total
   const [totalPages, setTotalPages] = useState<number>(0);
@@ -31,20 +33,28 @@ function TvSeriesPage() {
   // Variable para guardar número actual de página
   const [currentPage, setCurrentPage] = useState<number>(1);
 
+  // Variable para guardar texto de búsqueda ingresado por el usuario
+  const [searchText, setSearchText] = useState<string | null>(null);
+
   // Variables para estado de carga y mensajes de errores
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<String | null>(null);
 
   useEffect(() => {
-    fetchTvSeriesByCategory(currentCategory, currentPage);
+    searchText == null
+      ? fetchTvSeriesByCategory(currentCategory, currentPage)
+      : searchTvSeriesWithText(searchText);
   }, [currentCategory, currentPage]);
 
-  const fetchTvSeriesByCategory = async (category: string, page: number) => {
+  const fetchTvSeriesByCategory = async (
+    category: string | null,
+    page: number
+  ) => {
     setIsLoading(true);
     try {
       const response = await tvSeriesListsService.getTvSerieByCategory(
-        category,
-        page,
+        category != null ? category : "",
+        page
       );
       const data = response;
       setTvSeriesList(data.results);
@@ -61,6 +71,12 @@ function TvSeriesPage() {
   const changeCategory = (category: Categories) => {
     setCurrentCategory(category);
     setCurrentPage(1);
+
+    // Limpiar varibales relacionadas con la búsqueda por barra
+    let userSearchText = document.getElementById("search") as HTMLInputElement;
+    userSearchText.value = "";
+
+    setSearchText(null);
   };
 
   const handlePageSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -68,31 +84,64 @@ function TvSeriesPage() {
     setCurrentPage(selectedPage);
   };
 
+  const searchTvSeriesWithText = async (
+    text: string,
+    firstSearch: boolean = false
+  ): Promise<void> => {
+    // Limpiar variables de categoría
+    setCurrentCategory(null);
+
+    let response;
+    try {
+      // Se hace el llamado a la API con el texto proporcionado por el usuario
+      response = await searchService.getSearchTv(text, currentPage);
+    } catch (error) {
+      throw new Error(
+        `No ha sido posible obtener la lista de películas: ${error}`
+      );
+    }
+
+    if (firstSearch) setCurrentPage(1);
+    setSearchText(text);
+    setTvSeriesList(response.results);
+    setTotalPages(response.total_pages);
+  };
+
   return (
     <div className="bg-gray-950 pt-10 min-h-screen">
       {/* TÍTULO */}
       <div className="text-white text-5xl text-center">TV Shows</div>
 
-      <SearchBar />
+      <SearchBar onSearch={searchTvSeriesWithText} />
 
       {/* CATEGORÍAS */}
       <div className="flex flex-wrap gap-x-20 gap-y-10 justify-center md:py-10">
         <CategoryButton
           title="Al Aire"
           icon={faFilmSimple}
+          isActive={"airing_today" === currentCategory}
           onClick={() => changeCategory("airing_today")}
         />
         <CategoryButton
           title="Popular"
           icon={faStar}
+          isActive={"popular" === currentCategory}
           onClick={() => changeCategory("popular")}
         />
         <CategoryButton
           title="Más Valorado"
           icon={faMedal}
+          isActive={"top_rated" === currentCategory}
           onClick={() => changeCategory("top_rated")}
         />
       </div>
+
+      {/* TÍTULO DE PALABRA DE BÚSQUEDA (EN EL CASO DE QUE HAYA) */}
+      {searchText != null && (
+        <span className="ml-4 text-white text-3xl font-thin" text-center>
+          Búsqueda "{searchText}"
+        </span>
+      )}
 
       <div className="min-h-[90vh]">
         {/* LISTA DE PELÍCULAS */}
@@ -142,7 +191,7 @@ function TvSeriesPage() {
                   <option key={pageNumber} value={pageNumber}>
                     {pageNumber}
                   </option>
-                ),
+                )
               )}
             </select>
             <span>de {totalPages}</span>
