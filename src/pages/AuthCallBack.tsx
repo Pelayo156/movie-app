@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authenticationService } from "../services/authenticationService";
+import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
 
 function AuthCallBack() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -25,9 +28,8 @@ function AuthCallBack() {
         }
 
         // 1. Crear sesión con token aprobado
-        const sessionData = await authenticationService.createSession(
-          requestToken
-        );
+        const sessionData =
+          await authenticationService.createSession(requestToken);
 
         if (!sessionData.success) {
           throw new Error("No se pudo crear la sesión");
@@ -36,17 +38,15 @@ function AuthCallBack() {
         const sessionId = sessionData.session_id;
 
         // 2. Se obtiene información del usuario con sessionId recibida
-        const userData = await authenticationService.getAccountDetails(
-          sessionId
-        );
+        const userData =
+          await authenticationService.getAccountDetails(sessionId);
 
-        // 3. Guardar información de usuario en localStorage
-        localStorage.setItem("tmdb_session_id", sessionId);
-        localStorage.setItem("tmdb_account_id", userData.id.toString());
-        localStorage.setItem("tmdb_user", JSON.stringify(userData));
+        // 3. Guardar información de usuario en context y localStorage
+        login(userData, sessionId);
         console.log("Autenticación exitosa");
 
-        // 4. Redirigir a usuario a página principal
+        // 4. Se envía mensaje de éxito y se redirige a usuario a página principal
+        toast.success("Sesión iniciada correctamente");
         navigate("/");
       } catch (error) {
         console.error("Error en autenticación: ", error);

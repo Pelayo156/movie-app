@@ -22,7 +22,7 @@ function MoviesPage() {
 
   // Variable para almacenar categoría actual
   const [currentCategory, setCurrentCategory] = useState<Categories | null>(
-    "now_playing"
+    "now_playing",
   );
 
   // Variable para guardar número de páginas total
@@ -46,13 +46,13 @@ function MoviesPage() {
 
   const fetchMoviesByCategory = async (
     category: string | null,
-    page: number
+    page: number,
   ) => {
     setIsLoading(true);
     try {
       const response = await movieListsService.getMoviesByCategory(
         category ? category : "",
-        page
+        page,
       );
       const data = response;
       setMoviesList(data.results);
@@ -89,7 +89,7 @@ function MoviesPage() {
    */
   const searchMoviesWithText = async (
     text: string,
-    firstSearch: boolean = false
+    firstSearch: boolean = false,
   ): Promise<void> => {
     // Limpiar variables de categoría
     setCurrentCategory(null);
@@ -100,7 +100,7 @@ function MoviesPage() {
       response = await searchService.getSearchMovie(text, currentPage);
     } catch (error) {
       throw new Error(
-        `No ha sido posible obtener la lista de películas: ${error}`
+        `No ha sido posible obtener la lista de películas: ${error}`,
       );
     }
 
@@ -200,7 +200,7 @@ function MoviesPage() {
                   <option key={pageNumber} value={pageNumber}>
                     {pageNumber}
                   </option>
-                )
+                ),
               )}
             </select>
             <span>de {totalPages}</span>

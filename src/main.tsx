@@ -11,6 +11,8 @@ import TvSeriesPage from "./pages/TvSeriesPage.tsx";
 import CelebritiesPage from "./pages/CelebritiesPage.tsx";
 import CelebritieDetailPage from "./pages/CelebritieDetailPage.tsx";
 import AuthCallBack from "./pages/AuthCallBack.tsx";
+import { AuthProvider } from "./context/AuthContext.tsx";
+import ProfilePage from "./pages/ProfilePage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -50,12 +52,18 @@ const router = createBrowserRouter([
         path: "auth/callBack",
         element: <AuthCallBack />,
       },
+      {
+        path: "profile",
+        element: <ProfilePage />,
+      },
     ],
   },
 ]);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  </StrictMode>,
 );

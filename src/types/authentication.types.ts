@@ -22,3 +22,9 @@ export interface APITmdbSessionResponse {
   success: boolean;
   session_id: string;
 }
+
+export interface APITmdbDeleteSessionResponse {
+  success: boolean;
+  status_code: number;
+  status_message: string;
+}
