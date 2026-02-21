@@ -3,15 +3,13 @@ import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
 type Props = {
   icon: IconDefinition;
-  message: string
+  message: string;
 };
 
 function AccountActionButton(props: Props) {
   return (
     <div className="relative flex items-center group">
-      <button
-        className="flex items-center justify-center text-white text-xl font-bold w-12 h-12 rounded-full bg-blue-950"
-      >
+      <button className="flex items-center justify-center text-white text-xl font-bold w-12 h-12 rounded-full bg-blue-950">
         <FontAwesomeIcon icon={props.icon} className="text-lg" />
       </button>
       <div

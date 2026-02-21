@@ -49,6 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     setUser(null);
     localStorage.removeItem("tmdb_session_id");
+    localStorage.removeItem("tmdb_account_id");
     localStorage.removeItem("tmdb_user");
     sessionStorage.removeItem("request_token");
   };

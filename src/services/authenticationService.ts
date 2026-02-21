@@ -1,9 +1,8 @@
-import { data } from "react-router-dom";
 import type {
   APITmdbCreateNewTokenResponse,
   APITmdbUserResponse,
   APITmdbSessionResponse,
-  APITmdbDeleteSessionResponse
+  APITmdbDeleteSessionResponse,
 } from "../types/authentication.types";
 import apiClient from "./apiClient";
 
@@ -29,9 +28,11 @@ export const authenticationService = {
   deleteSession: async (
     sessionId: string
   ): Promise<APITmdbDeleteSessionResponse> => {
-    const response = await apiClient.delete("/authentication/session", {data: {
-      session_id: sessionId
-    }});
+    const response = await apiClient.delete("/authentication/session", {
+      data: {
+        session_id: sessionId,
+      },
+    });
     return response.data;
-  }
+  },
 };
