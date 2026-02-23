@@ -1,16 +1,29 @@
 export interface APITmdbPeopleDetailsResponse {
-    adult:                boolean;
-    also_known_as:        string[];
-    biography:            string;
-    birthday:             string;
-    deathday:             null;
-    gender:               number;
-    homepage:             null;
-    id:                   number;
-    imdb_id:              string;
-    known_for_department: string;
-    name:                 string;
-    place_of_birth:       string;
-    popularity:           number;
-    profile_path:         string;
+  adult: boolean;
+  also_known_as: string[];
+  biography: string;
+  birthday: string;
+  deathday: null;
+  gender: number;
+  homepage: null;
+  id: number;
+  imdb_id: string;
+  known_for_department: string;
+  name: string;
+  place_of_birth: string;
+  popularity: number;
+  profile_path: string;
+}
+
+export interface APITmdbPeopleProfile {
+  file_path: string;
+  height: number;
+  width: number;
+  vote_average: number;
+  vote_count: number;
+}
+
+export interface APITmdbPeopleImagesResponse {
+  id: number;
+  profiles: APITmdbPeopleProfile[];
 }
