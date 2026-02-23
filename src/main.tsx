@@ -13,7 +13,6 @@ import CelebritieDetailPage from "./pages/CelebritieDetailPage.tsx";
 import AuthCallBack from "./pages/AuthCallBack.tsx";
 import { AuthProvider } from "./context/AuthContext.tsx";
 import ProfilePage from "./pages/ProfilePage.tsx";
-import { FavoritesProvider } from "./context/FavoritesContext.tsx";
 import ProtectedRoute from "./components/auth/ProtectedRoute.tsx";
 
 const router = createBrowserRouter([
@@ -69,9 +68,7 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AuthProvider>
-      <FavoritesProvider>
-        <RouterProvider router={router} />
-      </FavoritesProvider>
+      <RouterProvider router={router} />
     </AuthProvider>
   </StrictMode>
 );

@@ -153,6 +153,7 @@ function MovieDetailPage() {
           runtime={movieDetail?.runtime}
           title={movieDetail?.title}
           vote_average={movieDetail?.vote_average}
+          mediaType="movie"
         />
       </div>
       {/* Fin Poster Principal */}

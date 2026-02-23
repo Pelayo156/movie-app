@@ -1,6 +1,7 @@
 import type { Genre } from "../../types/tvSeries.types";
-import { faList, faHeart, faBookmark } from "@fortawesome/free-solid-svg-icons";
+import { faHeart, faBookmark } from "@fortawesome/free-solid-svg-icons";
 import AccountActionButton from "../ui/AccountActionButton";
+import { useAuth } from "../../context/AuthContext";
 
 type Props = {
   backdrop_path: string | undefined;
@@ -12,10 +13,13 @@ type Props = {
   seasons?: number | undefined;
   vote_average: number | undefined;
   overview: string | undefined;
+  mediaType: "tv" | "movie";
 };
 
 const apiImageUrl = import.meta.env.VITE_API_IMAGE_URL;
 function PosterDetail(props: Props) {
+  const { isAuthenticated } = useAuth();
+
   return (
     // Contenedor principal: Ajuste de altura y padding vertical para móvil. Fondo oscuro.
     <div className="relative w-full h-auto min-h-[70vh] md:min-h-[60vh] pb-10 md:pb-0 bg-black pt-4 md:pt-0">
@@ -102,17 +106,25 @@ function PosterDetail(props: Props) {
             </div>
 
             {/* Botones de Acción - Flex-wrap y centrado en móvil */}
-            <div className="flex flex-wrap justify-center md:justify-start gap-3 sm:gap-5 mt-4">
-              <AccountActionButton icon={faList} message="Agregar a la lista" />
-              <AccountActionButton
-                icon={faHeart}
-                message="Marcar como favorito"
-              />
-              <AccountActionButton
-                icon={faBookmark}
-                message="Agregar a ver más tarde"
-              />
-            </div>
+            {isAuthenticated && (
+              <div className="flex flex-wrap justify-center md:justify-start gap-3 sm:gap-5 mt-4">
+                <AccountActionButton
+                  icon={faHeart}
+                  message={["Agregar a favoritos", "Quitar de favoritos"]}
+                  mediaType={props.mediaType}
+                  actionListType="favorites"
+                />
+                <AccountActionButton
+                  icon={faBookmark}
+                  message={[
+                    "Agregar a ver más tarde",
+                    "Quitar de ver más tarde",
+                  ]}
+                  mediaType={props.mediaType}
+                  actionListType="watchlater"
+                />
+              </div>
+            )}
 
             {/* Descripción General - Texto y título responsivos, centrado en móvil */}
             <div className="flex flex-col gap-2 md:gap-3 mt-4">

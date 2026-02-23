@@ -58,7 +58,7 @@ function Navbar() {
       const redirectUrl = window.location.origin + "/auth/callback";
 
       console.log(
-        `https://www.themoviedb.org/authenticate/${response.request_token}?redirect_to=${redirectUrl}`,
+        `https://www.themoviedb.org/authenticate/${response.request_token}?redirect_to=${redirectUrl}`
       );
 
       // Se redirige al usuario a login de TMDB para validar el token
@@ -79,7 +79,7 @@ function Navbar() {
     try {
       // Se llama a endpoit para eliminar la sesión del usuario
       response = await authenticationService.deleteSession(
-        sessionId ? sessionId : "",
+        sessionId ? sessionId : ""
       );
     } catch (err) {
       toast.error("Error al cerrar sesión");
@@ -157,18 +157,6 @@ function Navbar() {
                       className="mr-3 h-4 w-4 text-gray-400"
                     />
                     Mi Perfil
-                  </Link>
-
-                  <Link
-                    to="#"
-                    className="group flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
-                    onClick={() => setIsUserOpen(false)}
-                  >
-                    <FontAwesomeIcon
-                      icon={faHeart}
-                      className="mr-3 h-4 w-4 text-gray-400"
-                    />
-                    Favoritos
                   </Link>
                 </div>
 

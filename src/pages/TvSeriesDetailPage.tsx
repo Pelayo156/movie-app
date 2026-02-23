@@ -123,6 +123,7 @@ function TvSeriesDetailPage() {
         seasons={tvSerieDetail?.seasons.length}
         title={tvSerieDetail?.name}
         vote_average={tvSerieDetail?.vote_average}
+        mediaType="tv "
       />
       {/* Fin Poster Principal */}
 
