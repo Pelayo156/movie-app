@@ -4,44 +4,47 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
   faChevronRight,
+  faFilm,
+  faTv,
 } from "@fortawesome/free-solid-svg-icons";
 import type { TrendingResult } from "../types/trending.types";
 import type { MovieListsResult } from "../types/movieLists.types";
 import { trendingService } from "../services/trendingService";
 import { movieListsService } from "../services/movieListsService";
 import MovieCard from "../components/ui/MovieCard";
+import MovieCardSkeleton from "../components/ui/MovieCardSkeleton";
 
 const apiImageUrl = import.meta.env.VITE_API_IMAGE_URL;
+
 function HomePage() {
-  // Variables para setear listas de películas para los Carousel
   const [trendingItems, setTrendingItems] = useState<TrendingResult[]>([]);
   const [movieListsItems, setmovieListsItems] = useState<MovieListsResult[]>(
     []
   );
-
-  // Variables para cambiar opción del toogle de cada Carousel
   const [trendingMediaType, setTrendingMediaType] = useState<
     "Películas" | "TV Series"
   >("Películas");
 
-  // Variables para de referencias para elementos del DOM
   const trendingCarouselRef = useRef<HTMLDivElement>(null);
   const movieListsCarouselRef = useRef<HTMLDivElement>(null);
 
-  // Variables para estado de carga y mensajes de errores
-  const [isLoading, setIsLoading] = useState(false);
+  const [isTrendingLoading, setIsTrendingLoading] = useState(true);
+  const [isMovieListsLoading, setIsMovieListsLoading] = useState(true);
+  const isReady = !isTrendingLoading && !isMovieListsLoading;
+
   const [error, setError] = useState<String | null>(null);
 
-  // Variable para guardar película que se mostrará en el poster inicial
   const posterMovie = trendingItems.length > 0 ? trendingItems[7] : null;
 
-  useEffect(() => {
-    // Obtener películas en tendencia
-    const fetchTrendingItems = async () => {
-      setIsLoading(true);
-      setError(null);
+  const toggleOptions = [
+    { value: "Películas", label: "Películas", icon: faFilm },
+    { value: "TV Series", label: "TV Series", icon: faTv },
+  ];
 
-      // Se guardan las películas en tendencia en solo un estado dependiendo de la elección del usuario.
+  useEffect(() => {
+    const fetchTrendingItems = async () => {
+      setIsTrendingLoading(true);
+      setError(null);
       try {
         let data;
         if (trendingMediaType === "Películas") {
@@ -54,36 +57,29 @@ function HomePage() {
         setTrendingItems(data);
       } catch (err) {
         setError("Error al obtener películas o series en tendencia.");
-        console.error(err);
       } finally {
-        setIsLoading(false);
+        setIsTrendingLoading(false);
       }
     };
-
     fetchTrendingItems();
   }, [trendingMediaType]);
 
   useEffect(() => {
     const fetchMovieListsItems = async () => {
-      setIsLoading(true);
+      setIsMovieListsLoading(true);
       setError(null);
-
-      // Se guardan las películas en movie Lists.
       try {
         const response = await movieListsService.getPopular();
-        const data = response.results;
-        setmovieListsItems(data);
+        setmovieListsItems(response.results);
       } catch (err) {
         setError("Error al obtener películas o series populares.");
-        console.error(err);
       } finally {
-        setIsLoading(false);
+        setIsMovieListsLoading(false);
       }
     };
     fetchMovieListsItems();
   }, []);
 
-  // Función para hacer Scroll hacia la izquierda en Carousel
   const scrollLeft = (ref: React.RefObject<HTMLDivElement | null>) => {
     if (ref.current) {
       ref.current.scrollBy({
@@ -93,7 +89,6 @@ function HomePage() {
     }
   };
 
-  // Función para hacer Scroll hacia la derecha en Carousel
   const scrollRight = (ref: React.RefObject<HTMLDivElement | null>) => {
     if (ref.current) {
       ref.current.scrollBy({
@@ -105,68 +100,64 @@ function HomePage() {
 
   return (
     <div className="bg-gray-950">
-      {/* Inicio Poster Principal */}
+      {/* Poster Principal */}
       <div
-        // h-[75vh] es un buen punto de partida, pero podemos ajustarlo para pantallas más pequeñas
-        className="relative w-full h-[60vh] md:h-[75vh] bg-cover bg-top bg-no-repeat"
+        className="relative w-full h-[50vh] md:h-[75vh] bg-cover bg-top bg-no-repeat"
         style={{
           backgroundImage: `url(${apiImageUrl}/original/${posterMovie?.backdrop_path})`,
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-black/65 to-transparent"></div>
-
+        <div className="absolute inset-0 bg-gradient-to-r from-black/75 to-transparent"></div>
         <div className="absolute top-0 left-0 flex h-full w-full items-center z-10">
-          {/* Ajuste de padding y tamaños de texto para responsividad */}
           <div className="px-5 md:px-10 lg:px-20">
             {posterMovie && (
-              // Tamaño de texto responsivo
-              <h1 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold">
+              <h1 className="text-white text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold drop-shadow-lg">
                 {"name" in posterMovie ? posterMovie.name : posterMovie.title}
               </h1>
             )}
-            {/* Tamaño de texto y ancho máximo responsivos */}
-            <p className="text-white text-sm sm:text-base md:text-lg text-justify mt-4 md:mt-10 max-w-xl md:max-w-2xl lg:max-w-3xl">
+            {/* Descripción oculta en móvil para no saturar el poster */}
+            <p className="hidden sm:block text-white text-sm sm:text-base md:text-lg text-justify mt-4 md:mt-10 max-w-xl md:max-w-2xl lg:max-w-3xl">
               {posterMovie?.overview}
             </p>
           </div>
         </div>
       </div>
-      {/* Fin Poster Principal */}
 
-      {/* Inicio Carousel de Tendencias */}
-      <div className="font-bold text-xl md:text-2xl text-white flex flex-col md:flex-row items-start md:items-center max-w-[95%] lg:max-w-[90%] mx-auto pt-8 md:pt-10">
-        Tendencia
-        {/* Ajuste de márgenes y espaciado para el toggle */}
-        <div className="flex space-x-2 bg-gray-300 p-1 rounded-xl mt-4 md:mt-0 md:ml-8">
-          <button
-            onClick={() => setTrendingMediaType("Películas")}
-            className={`px-3 py-1 text-sm font-semibold rounded-lg transition-colors duration-300 ${
-              trendingMediaType === "Películas"
-                ? "bg-black text-white shadow"
-                : "bg-transparent text-gray-600 hover:bg-gray-300"
-            }`}
-          >
-            Películas
-          </button>
-          <button
-            onClick={() => setTrendingMediaType("TV Series")}
-            className={`px-3 py-1 text-sm font-semibold rounded-lg transition-colors duration-300 ${
-              trendingMediaType === "TV Series"
-                ? "bg-black text-white shadow"
-                : "bg-transparent text-gray-600 hover:bg-gray-300"
-            }`}
-          >
-            TV Series
-          </button>
+      {/* Encabezado Carousel de Tendencias */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center max-w-[95%] lg:max-w-[90%] mx-auto pt-8 md:pt-10 gap-3 sm:gap-0">
+        <span className="font-bold text-xl md:text-2xl text-white">
+          Tendencia
+        </span>
+
+        {/* Toggle estilo ProfilePage */}
+        <div className="flex gap-2 bg-white/5 backdrop-blur-sm p-1 rounded-xl border border-white/10 sm:ml-6">
+          {toggleOptions.map((option) => (
+            <button
+              key={option.value}
+              onClick={() =>
+                setTrendingMediaType(option.value as "Películas" | "TV Series")
+              }
+              className={`
+                px-4 py-2 rounded-lg flex items-center gap-2
+                transition-all duration-300 text-sm font-medium
+                ${
+                  trendingMediaType === option.value
+                    ? "bg-gradient-to-r from-cyan-500/30 to-blue-500/30 text-white shadow-lg"
+                    : "text-white/70 hover:text-white hover:bg-white/10"
+                }
+              `}
+            >
+              <FontAwesomeIcon icon={option.icon} className="text-xs" />
+              <span>{option.label}</span>
+            </button>
+          ))}
         </div>
       </div>
-      {/* Ancho del contenedor del carrusel y márgenes */}
+
+      {/* Carousel de Tendencias */}
       <div className="relative max-w-[100%] mx-0 sm:mx-2 md:mx-4">
-        {/* Botones de navegación del carrusel - ajustamos padding y tamaños de ícono para pantallas pequeñas */}
         <button
-          onClick={() => {
-            scrollLeft(trendingCarouselRef);
-          }}
+          onClick={() => scrollLeft(trendingCarouselRef)}
           className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 text-white p-1 sm:p-2 rounded-full hover:bg-black/80 transition-all"
           aria-label="Scroll Left"
         >
@@ -178,39 +169,36 @@ function HomePage() {
         </button>
         <div
           ref={trendingCarouselRef}
-          // Ajuste de max-w, overflow, espaciado y padding para responsividad
           className="flex flex-row max-w-[95%] lg:max-w-[90%] mx-auto overflow-x-auto space-x-3 sm:space-x-4 md:space-x-6 px-1 sm:px-2 pt-4 md:pt-6 scrollbar-hide"
         >
-          {isLoading && <p className="text-white">Cargando...</p>}
           {error && <p className="text-red-500">{error}</p>}
-
-          {!isLoading &&
-            !error &&
-            trendingItems.map((items) => (
-              <Link
-                to={
-                  trendingMediaType == "Películas"
-                    ? `/movie/${items.id}`
-                    : `/tv/${items.id}`
-                }
-                key={items.id}
-              >
-                <MovieCard
-                  poster_path={items.poster_path}
-                  title={"title" in items ? items.title : items.name}
-                  release_date={
-                    "release_date" in items
-                      ? items.release_date
-                      : items.first_air_date
+          {!isReady
+            ? Array.from({ length: 10 }).map((_, i) => (
+                <MovieCardSkeleton key={i} />
+              ))
+            : trendingItems.map((items) => (
+                <Link
+                  to={
+                    trendingMediaType === "Películas"
+                      ? `/movie/${items.id}`
+                      : `/tv/${items.id}`
                   }
-                />
-              </Link>
-            ))}
+                  key={items.id}
+                >
+                  <MovieCard
+                    poster_path={items.poster_path}
+                    title={"title" in items ? items.title : items.name}
+                    release_date={
+                      "release_date" in items
+                        ? items.release_date
+                        : items.first_air_date
+                    }
+                  />
+                </Link>
+              ))}
         </div>
         <button
-          onClick={() => {
-            scrollRight(trendingCarouselRef);
-          }}
+          onClick={() => scrollRight(trendingCarouselRef)}
           className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 text-white p-1 sm:p-2 rounded-full hover:bg-black/80 transition-all"
           aria-label="Scroll Right"
         >
@@ -221,19 +209,16 @@ function HomePage() {
           />
         </button>
       </div>
-      {/* Fin Carousel de Tendencias */}
 
-      {/* Inicio Carousel de Movie Lists */}
-      <div className="font-bold text-xl md:text-2xl text-white flex flex-row max-w-[95%] lg:max-w-[90%] mx-auto pt-8 md:pt-10 text-prueba-funciona">
+      {/* Encabezado Carousel de Populares */}
+      <div className="font-bold text-xl md:text-2xl text-white max-w-[95%] lg:max-w-[90%] mx-auto pt-8 md:pt-10">
         Populares
       </div>
-      {/* Ancho del contenedor del carrusel y márgenes */}
+
+      {/* Carousel de Populares */}
       <div className="relative max-w-[100%] mx-0 sm:mx-2 md:mx-4">
-        {/* Botones de navegación del carrusel - ajustamos padding y tamaños de ícono para pantallas pequeñas */}
         <button
-          onClick={() => {
-            scrollLeft(movieListsCarouselRef);
-          }}
+          onClick={() => scrollLeft(movieListsCarouselRef)}
           className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 text-white p-1 sm:p-2 rounded-full hover:bg-black/80 transition-all"
           aria-label="Scroll Left"
         >
@@ -245,29 +230,25 @@ function HomePage() {
         </button>
         <div
           ref={movieListsCarouselRef}
-          // Ajuste de max-w, overflow, espaciado y padding para responsividad
           className="flex flex-row max-w-[95%] lg:max-w-[90%] mx-auto overflow-x-auto space-x-3 sm:space-x-4 md:space-x-6 px-1 sm:px-2 pt-4 md:pt-6 scrollbar-hide"
         >
-          {isLoading && <p className="text-white">Cargando...</p>}
           {error && <p className="text-red-500">{error}</p>}
-
-          {!isLoading &&
-            !error &&
-            movieListsItems.map((items) => (
-              <Link to={`/movie/${items.id}`} key={items.id}>
-                <MovieCard
-                  key={items.id}
-                  poster_path={items.poster_path}
-                  title={items.original_title}
-                  release_date={items.release_date}
-                />
-              </Link>
-            ))}
+          {!isReady
+            ? Array.from({ length: 10 }).map((_, i) => (
+                <MovieCardSkeleton key={i} />
+              ))
+            : movieListsItems.map((items) => (
+                <Link to={`/movie/${items.id}`} key={items.id}>
+                  <MovieCard
+                    poster_path={items.poster_path}
+                    title={items.original_title}
+                    release_date={items.release_date}
+                  />
+                </Link>
+              ))}
         </div>
         <button
-          onClick={() => {
-            scrollRight(movieListsCarouselRef);
-          }}
+          onClick={() => scrollRight(movieListsCarouselRef)}
           className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 text-white p-1 sm:p-2 rounded-full hover:bg-black/80 transition-all"
           aria-label="Scroll Right"
         >
@@ -278,7 +259,6 @@ function HomePage() {
           />
         </button>
       </div>
-      {/* Fin Carousel de Movie Lists */}
     </div>
   );
 }

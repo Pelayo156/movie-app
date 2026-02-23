@@ -19,24 +19,13 @@ import ListCardSkeleton from "../components/ui/ListCardSkeleton";
 import SearchBar from "../components/ui/SearchBar";
 
 function TvSeriesPage() {
-  // Variable para guardar lista de tv series según categoría seleccionada por el usuario
   const [tvSeriesList, setTvSeriesList] = useState<ResultTvSeriesLists[]>();
-
-  // Variable para almacenar categoría actual
   const [currentCategory, setCurrentCategory] = useState<Categories | null>(
-    "airing_today",
+    "airing_today"
   );
-
-  // Variable para guardar número de páginas total
   const [totalPages, setTotalPages] = useState<number>(0);
-
-  // Variable para guardar número actual de página
   const [currentPage, setCurrentPage] = useState<number>(1);
-
-  // Variable para guardar texto de búsqueda ingresado por el usuario
   const [searchText, setSearchText] = useState<string | null>(null);
-
-  // Variables para estado de carga y mensajes de errores
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -47,17 +36,16 @@ function TvSeriesPage() {
 
   const fetchTvSeriesByCategory = async (
     category: string | null,
-    page: number,
+    page: number
   ) => {
     setIsLoading(true);
     try {
       const response = await tvSeriesListsService.getTvSerieByCategory(
         category != null ? category : "",
-        page,
+        page
       );
-      const data = response;
-      setTvSeriesList(data.results);
-      setTotalPages(data.total_pages);
+      setTvSeriesList(response.results);
+      setTotalPages(response.total_pages);
     } catch (err) {
       console.error(err);
     } finally {
@@ -65,40 +53,31 @@ function TvSeriesPage() {
     }
   };
 
-  // Función para cambiar de categoría
   const changeCategory = (category: Categories) => {
     setCurrentCategory(category);
     setCurrentPage(1);
-
-    // Limpiar varibales relacionadas con la búsqueda por barra
     let userSearchText = document.getElementById("search") as HTMLInputElement;
     userSearchText.value = "";
-
     setSearchText(null);
   };
 
   const handlePageSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedPage = Number(event.target.value);
-    setCurrentPage(selectedPage);
+    setCurrentPage(Number(event.target.value));
   };
 
   const searchTvSeriesWithText = async (
     text: string,
-    firstSearch: boolean = false,
+    firstSearch: boolean = false
   ): Promise<void> => {
-    // Limpiar variables de categoría
     setCurrentCategory(null);
-
     let response;
     try {
-      // Se hace el llamado a la API con el texto proporcionado por el usuario
       response = await searchService.getSearchTv(text, currentPage);
     } catch (error) {
       throw new Error(
-        `No ha sido posible obtener la lista de películas: ${error}`,
+        `No ha sido posible obtener la lista de películas: ${error}`
       );
     }
-
     if (firstSearch) setCurrentPage(1);
     setSearchText(text);
     setTvSeriesList(response.results);
@@ -106,14 +85,17 @@ function TvSeriesPage() {
   };
 
   return (
-    <div className="bg-gray-950 pt-10 min-h-screen">
+    <div className="bg-gray-950 pt-8 md:pt-10 min-h-screen">
       {/* TÍTULO */}
-      <div className="text-white text-5xl text-center">TV Shows</div>
+      <div className="text-white text-3xl md:text-5xl text-center">
+        TV Shows
+      </div>
 
       <SearchBar onSearch={searchTvSeriesWithText} />
 
       {/* CATEGORÍAS */}
-      <div className="flex flex-wrap gap-x-20 gap-y-10 justify-center md:py-10">
+      {/* En móvil: grid de 3 columnas (son 3 categorías). En desktop: fila con gap grande */}
+      <div className="grid grid-cols-3 md:flex md:flex-wrap gap-5 md:gap-x-20 md:gap-y-10 justify-items-center md:justify-center px-4 md:px-0 py-6 md:py-10">
         <CategoryButton
           title="Al Aire"
           icon={faFilmSimple}
@@ -134,19 +116,18 @@ function TvSeriesPage() {
         />
       </div>
 
-      {/* TÍTULO DE PALABRA DE BÚSQUEDA (EN EL CASO DE QUE HAYA) */}
+      {/* TEXTO DE BÚSQUEDA */}
       {searchText != null && (
-        <span className="ml-4 text-white text-3xl font-thin" text-center>
-          Búsqueda "{searchText}"
-        </span>
+        <div className="px-4 mb-2">
+          <span className="text-white text-xl md:text-3xl font-thin">
+            Búsqueda "{searchText}"
+          </span>
+        </div>
       )}
 
+      {/* LISTA DE SERIES */}
       <div className="min-h-[90vh]">
-        {/* LISTA DE PELÍCULAS */}
-        <div
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6
-                     3xl:grid-cols-8 gap-x-5 gap-y-10 justify-items-center px-4"
-        >
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 3xl:grid-cols-8 gap-x-3 gap-y-8 md:gap-x-5 md:gap-y-10 justify-items-center px-3 md:px-4">
           {isLoading
             ? Array.from({ length: 20 }).map((_, index) => (
                 <ListCardSkeleton key={index} />
@@ -164,24 +145,27 @@ function TvSeriesPage() {
 
       {/* PAGINADOR */}
       {!isLoading && totalPages > 1 && (
-        <div className="mt-20 pb-10 text-white/80 flex gap-10 md:gap-20 justify-center items-center">
+        <div className="mt-10 md:mt-20 pb-10 text-white/80 flex gap-4 md:gap-20 justify-center items-center">
           <button
-            className={`font-bold ${
+            className={`font-bold text-sm md:text-base ${
               currentPage > 1 && "hover:text-white"
             } disabled:opacity-50 disabled:cursor-not-allowed`}
             disabled={currentPage <= 1}
             onClick={() => setCurrentPage(currentPage - 1)}
           >
-            <FontAwesomeIcon icon={faLessThan} className="mr-2 text-sm" />
+            <FontAwesomeIcon
+              icon={faLessThan}
+              className="mr-1 md:mr-2 text-xs md:text-sm"
+            />
             Anterior
           </button>
 
-          <div className="flex items-center gap-3 font-bold">
+          <div className="flex items-center gap-2 md:gap-3 font-bold text-sm md:text-base">
             <span>Página</span>
             <select
               value={currentPage}
               onChange={handlePageSelect}
-              className="bg-gray-800 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block cursor-pointer"
+              className="bg-gray-800 border border-gray-600 text-white text-xs md:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block cursor-pointer"
               aria-label="Seleccionar página"
             >
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(
@@ -189,21 +173,24 @@ function TvSeriesPage() {
                   <option key={pageNumber} value={pageNumber}>
                     {pageNumber}
                   </option>
-                ),
+                )
               )}
             </select>
             <span>de {totalPages}</span>
           </div>
 
           <button
-            className={`font-bold ${
+            className={`font-bold text-sm md:text-base ${
               currentPage < totalPages && "hover:text-white"
             } disabled:opacity-50 disabled:cursor-not-allowed`}
             disabled={currentPage >= totalPages}
             onClick={() => setCurrentPage(currentPage + 1)}
           >
             Siguiente
-            <FontAwesomeIcon icon={faGreaterThan} className="ml-2 text-sm" />
+            <FontAwesomeIcon
+              icon={faGreaterThan}
+              className="ml-1 md:ml-2 text-xs md:text-sm"
+            />
           </button>
         </div>
       )}

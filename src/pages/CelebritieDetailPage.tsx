@@ -13,11 +13,9 @@ function CelebritieDetailPage() {
     useState<APITmdbPeopleDetailsResponse | null>(null);
 
   useEffect(() => {
-    // Para que el usuario cuando entre a esta vista se vea desde el inicio
     window.scrollTo(0, 0);
 
     const fetchCelebritieDetail = async () => {
-      // Se guardan detalles de Celebridad
       try {
         if (celebritieId) {
           const response = await peopleService.getDetailPeople(celebritieId);
@@ -32,16 +30,17 @@ function CelebritieDetailPage() {
   }, []);
 
   return (
-    <div className="min-h-screen grid place-items-center">
-      {/* INICIO CARD */}
-      <div className="p-6 grid h-[600px] w-full max-w-6xl grid-cols-1 gap-6 md:grid-cols-3 rounded-xl bg-gray-800">
+    <div className="min-h-screen flex items-center justify-center px-4 py-10">
+      {/* CARD */}
+      <div className="p-4 md:p-6 w-full max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 rounded-xl bg-gray-800">
+        {/* PARTE IZQUIERDA */}
         <div className="col-span-1 flex flex-col overflow-hidden rounded-3xl bg-black/25 shadow-xl">
-          {/* PARTE IZQUIERDA DE LA CARD */}
-          <div className="relative h-2/3 w-full">
+          {/* En móvil la imagen es más pequeña y no ocupa 2/3 de altura fija */}
+          <div className="relative w-full h-64 sm:h-80 md:h-2/3">
             <img
               src={`${apiImageUrl}/w500${celebritieDetail?.profile_path}`}
               alt="Celebritie Image"
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover object-top"
               style={{
                 maskImage:
                   "linear-gradient(to bottom, black 60%, transparent 100%)",
@@ -50,11 +49,13 @@ function CelebritieDetailPage() {
               }}
             />
           </div>
-          <div className="flex h-1/3 flex-col justify-center px-8 pb-8 text-zinc-300">
-            <h2 className="text-2xl font-bold text-white">
+
+          {/* Info debajo de la foto */}
+          <div className="flex flex-col justify-center px-6 md:px-8 py-6 md:pb-8 text-zinc-300">
+            <h2 className="text-xl md:text-2xl font-bold text-white">
               {celebritieDetail?.name}
             </h2>
-            <span className="mb-6 text-sm text-zinc-500">
+            <span className="mb-4 md:mb-6 text-sm text-zinc-500">
               {celebritieDetail?.known_for_department}
             </span>
 
@@ -82,10 +83,14 @@ function CelebritieDetailPage() {
             </div>
           </div>
         </div>
-        {/* PARTE DERECHA DE LA CARD: BIOGRAFIA */}
-        <div className="col-span-2 rounded-3xl bg-black/25 p-10 shadow-xl overflow-y-auto custom-scrollbar">
-          <h3 className="mb-5 text-3xl font-bold text-white py-2">Biografía</h3>
-          <div className="space-y-4 text-lg leading-relaxed text-zinc-300">
+
+        {/* PARTE DERECHA: BIOGRAFÍA */}
+        {/* En móvil no tiene altura fija, crece con el contenido */}
+        <div className="col-span-1 md:col-span-2 rounded-3xl bg-black/25 p-6 md:p-10 shadow-xl overflow-y-auto md:max-h-[600px] custom-scrollbar">
+          <h3 className="mb-4 md:mb-5 text-2xl md:text-3xl font-bold text-white py-2">
+            Biografía
+          </h3>
+          <div className="space-y-4 text-base md:text-lg leading-relaxed text-zinc-300">
             <p className="text-justify font-extralight">
               {celebritieDetail?.biography
                 ? celebritieDetail.biography

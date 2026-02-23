@@ -14,9 +14,12 @@ import TextDetail from "../components/layouts/TextDetail";
 import TrailerModal from "../components/ui/TrailerModal";
 import { capitalize } from "../utils/textUtils";
 import { Link } from "react-router-dom";
+import PosterDetailSkeleton from "../components/layouts/PosterDetailSkeleton";
 
 const apiImageUrl = import.meta.env.VITE_API_IMAGE_URL;
 function MovieDetailPage() {
+  const movieId = useParams().id;
+
   // Variable para guardar datos de la película
   const [movieDetail, setMovieDetail] =
     useState<APITmdbMovieDetailsResponse | null>(null);
@@ -31,79 +34,58 @@ function MovieDetailPage() {
   // Variable para comprobar si el modal del trailer está abierto
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const movieId = useParams().id;
+  // Variable para guardar estado de carga
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Para que el usuario cuando entre a esta vista se vea desde el inicio
     window.scrollTo(0, 0);
 
-    const fetchMovieDetails = async () => {
-      // Se guardan detalles de la película
+    const fetchAllData = async () => {
+      if (!movieId) return;
+      setIsLoading(true);
       try {
-        if (movieId) {
-          const response = await moviesService.getDetails(movieId);
-          setMovieDetail(response);
-        }
+        const [details, credits, videos] = await Promise.all([
+          moviesService.getDetails(movieId),
+          moviesService.getCredits(movieId),
+          moviesService.getVideos(movieId),
+        ]);
+        setMovieDetail(details);
+        setMovieCredits(credits);
+        setMovieVideos(videos);
       } catch (err) {
         console.error(err);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    const fetchMovieCredits = async () => {
-      // Se guardan creditos de la película
-      try {
-        if (movieId) {
-          const response = await moviesService.getCredits(movieId);
-          setMovieCredits(response);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    const fetchMovieVideos = async () => {
-      // Se guardan videos de la película
-      try {
-        if (movieId) {
-          const response = await moviesService.getVideos(movieId);
-          setMovieVideos(response);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchMovieDetails();
-    fetchMovieCredits();
-    fetchMovieVideos();
+    fetchAllData();
   }, [movieId]);
 
   // Función para obtener el primer trailer oficial
   const getOfficialTrailer = (
-    videos: APITmdbMovieVideosResponse,
+    videos: APITmdbMovieVideosResponse
   ): Result | null => {
     // Buscar trailer oficial con nombre "Official Trailer"
     let trailer = videos.results.find(
       (video) =>
         video.name === "Official Trailer" &&
         video.official &&
-        video.site === "YouTube",
+        video.site === "YouTube"
     );
 
     // Si no encuentra, buscar cualquier trailer oficial
     if (!trailer) {
       trailer = videos.results.find(
         (video) =>
-          video.type === "Trailer" &&
-          video.official &&
-          video.site === "YouTube",
+          video.type === "Trailer" && video.official && video.site === "YouTube"
       );
     }
 
     // Si aún no encuentra, buscar cualquier trailer
     if (!trailer) {
       trailer = videos.results.find(
-        (video) => video.type === "Trailer" && video.site === "YouTube",
+        (video) => video.type === "Trailer" && video.site === "YouTube"
       );
     }
 
@@ -122,19 +104,21 @@ function MovieDetailPage() {
     <div>
       {/* Inicio Poster Principal (este componente ya debería ser responsivo internamente si fue diseñado bien) */}
       <div className="mt-0">
-        {" "}
-        {/* Eliminamos mt-20 extra aquí, ya que Navbar tiene mt-20 */}
-        <PosterDetail
-          backdrop_path={movieDetail?.backdrop_path}
-          genres={movieDetail?.genres}
-          overview={movieDetail?.overview}
-          poster_path={movieDetail?.poster_path}
-          release_date={movieDetail?.release_date}
-          runtime={movieDetail?.runtime}
-          title={movieDetail?.title}
-          vote_average={movieDetail?.vote_average}
-          mediaType="movie"
-        />
+        {isLoading ? (
+          <PosterDetailSkeleton />
+        ) : (
+          <PosterDetail
+            backdrop_path={movieDetail?.backdrop_path}
+            genres={movieDetail?.genres}
+            overview={movieDetail?.overview}
+            poster_path={movieDetail?.poster_path}
+            release_date={movieDetail?.release_date}
+            runtime={movieDetail?.runtime}
+            title={movieDetail?.title}
+            vote_average={movieDetail?.vote_average}
+            mediaType="movie"
+          />
+        )}
       </div>
       {/* Fin Poster Principal */}
 
@@ -222,8 +206,8 @@ function MovieDetailPage() {
                 movieDetail?.original_language &&
                 capitalize(
                   new Intl.DisplayNames(["es"], { type: "language" }).of(
-                    movieDetail?.original_language,
-                  ),
+                    movieDetail?.original_language
+                  )
                 )
               }
             />

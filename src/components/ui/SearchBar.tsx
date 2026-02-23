@@ -6,38 +6,31 @@ type Props = {
 };
 
 function SearchBar(props: Props) {
-  //Función para enviar lo que escribió el usuario en el inputText a la función de búsqueda correspondiente
   const handleSearch = () => {
-    // Obtener valor del input
     const input = document.getElementById("search") as HTMLInputElement;
     const searchText = input?.value || "";
-
-    // Se llama a la función entregada en las props para hacer la búsqueda
     props.onSearch(searchText, true);
   };
 
   return (
-    <div className="mt-10 grid grid-cols-6 gap-4">
-      {/* BUSCADOR */}
-      <div className="col-span-4 col-start-2">
-        <input
-          type="text"
-          id="search"
-          name="search"
-          className="w-full p-4 rounded-full bg-gray-50/10 text-white font-light"
-        />
-      </div>
-      <div className="col-span-1 flex items-center">
+    // En móvil: padding lateral generoso. En desktop: grid centrado como antes
+    <div className="mt-8 md:mt-10 flex items-center gap-3 px-4 sm:px-10 md:px-0 md:grid md:grid-cols-6 md:gap-4">
+      {/* Input: ancho completo en móvil, col-span-4 centrado en desktop */}
+      <input
+        type="text"
+        id="search"
+        name="search"
+        className="flex-1 md:col-span-4 md:col-start-2 w-full p-3 md:p-4 rounded-full bg-gray-50/10 text-white font-light"
+      />
+      {/* Botón: se mantiene junto al input sin pegarse al borde */}
+      <div className="flex items-center md:col-span-1">
         <button
-          className="p-4 bg-gray-50/10 rounded-full border-2 border-transparent 
+          className="p-3 md:p-4 bg-gray-50/10 rounded-full border-2 border-transparent 
                      hover:border-2 hover:border-white/80 hover:scale-105 
                      ease-in-out transition-colors duration-200"
           onClick={handleSearch}
         >
-          <FontAwesomeIcon
-            icon={faMagnifyingGlass}
-            className="text-xl text-white"
-          />
+          <FontAwesomeIcon icon={faMagnifyingGlass} className="text-lg md:text-xl text-white" />
         </button>
       </div>
     </div>

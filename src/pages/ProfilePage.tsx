@@ -32,35 +32,27 @@ function ProfilePage() {
     { value: "tv", label: "Series", icon: faTv },
   ];
 
-  // Variable para almacenar lista seleccionada por usuario
   const [mediaList, setMediaList] = useState<AnyMedia[]>([]);
-
-  // Variables para estado de carga y mensajes de errores
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // UseEffect para cargar datos cuando cambia el tab o el mediaType
   useEffect(() => {
     if (user != null) {
       fetchData(activeTab, mediaType);
     }
   }, [activeTab, mediaType, user]);
 
-  // Llamada para almacenar contenido seleccionado por el usuario
   const fetchData = async (action: MediaAction, type: MediaType) => {
     if (!user?.id) return;
-
     setIsLoading(true);
     setError(null);
-
     try {
       const response = await accountService.getMediaList(
         user.id,
         action,
         type,
-        1,
+        1
       );
-      // Guardamos en la lista única
       setMediaList(response.results as AnyMedia[]);
     } catch (err) {
       setError(`No ha sido posible obtener la lista de ${action}`);
@@ -71,35 +63,37 @@ function ProfilePage() {
   };
 
   return (
-    <div className="h-screen bg-gray-900 flex flex-col overflow-hidden">
-      {/* Header con info del usuario - FIJO */}
-      <div className="flex-shrink-0 w-full px-10 py-6 h-44 flex flex-row items-center gap-4 bg-gradient-to-r from-cyan-950/60 to-blue-950/60 backdrop-blur-sm">
-        <div className="bg-gradient-to-br from-cyan-500 to-blue-900 w-32 h-32 rounded-full grid place-items-center shadow-xl ring-4 ring-white/20">
-          <span className="text-6xl text-white font-bold uppercase leading-none">
+    <div className="min-h-screen bg-gray-900 flex flex-col">
+      {/* Header con info del usuario */}
+      <div className="flex-shrink-0 w-full px-5 md:px-10 py-5 md:py-6 h-auto md:h-44 flex flex-row items-center gap-4 bg-gradient-to-r from-cyan-950/60 to-blue-950/60 backdrop-blur-sm">
+        <div className="bg-gradient-to-br from-cyan-500 to-blue-900 w-20 h-20 md:w-32 md:h-32 rounded-full grid place-items-center shadow-xl ring-4 ring-white/20 flex-shrink-0">
+          <span className="text-4xl md:text-6xl text-white font-bold uppercase leading-none">
             {user?.username.at(0)}
           </span>
         </div>
-
-        <div className="flex flex-col gap-2">
-          <div className="text-white text-4xl font-bold">{user?.username}</div>
+        <div className="flex flex-col gap-1 md:gap-2">
+          <div className="text-white text-2xl md:text-4xl font-bold">
+            {user?.username}
+          </div>
           <div className="text-white/70 text-sm">{user?.name}</div>
         </div>
       </div>
 
       {/* Contenedor principal */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Menú lateral - FIJO */}
-        <div className="w-80 bg-white/5 border-r border-white/10 relative overflow-hidden flex-shrink-0">
+      <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
+        {/* Menú: horizontal en móvil, lateral en desktop */}
+        <div className="md:w-80 bg-white/5 border-b md:border-b-0 md:border-r border-white/10 relative flex-shrink-0">
           <div className="absolute inset-0 bg-gradient-to-br from-cyan-600/10 via-transparent to-blue-600/10 pointer-events-none" />
 
-          <nav className="relative z-10 p-6 space-y-3">
+          {/* En móvil: fila. En desktop: columna */}
+          <nav className="relative z-10 p-3 md:p-6 flex flex-row md:flex-col gap-2 md:gap-3 md:space-y-1">
             {menuItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id as MediaAction)}
                 className={`
-                  w-full px-6 py-4 rounded-xl text-left
-                  flex items-center gap-4
+                  flex-1 md:flex-none px-4 md:px-6 py-3 md:py-4 rounded-xl text-left
+                  flex items-center justify-center md:justify-start gap-2 md:gap-4
                   transition-all duration-300 ease-out
                   group relative overflow-hidden
                   ${
@@ -117,39 +111,35 @@ function ProfilePage() {
                     ${activeTab === item.id ? "opacity-0" : ""}
                   `}
                 />
-
                 <FontAwesomeIcon
                   icon={item.icon}
-                  className="text-2xl relative z-10"
+                  className="text-lg md:text-2xl relative z-10"
                 />
-                <span className="font-medium text-lg relative z-10">
+                <span className="font-medium text-sm md:text-lg relative z-10">
                   {item.label}
                 </span>
               </button>
             ))}
           </nav>
-
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-cyan-500/5 to-transparent pointer-events-none" />
         </div>
 
-        {/* Contenido principal - SCROLLABLE */}
+        {/* Contenido principal - scrollable */}
         <div className="flex-1 overflow-y-auto bg-gray-950">
-          <div className="p-8">
+          <div className="p-4 md:p-8">
             <div className="max-w-6xl mx-auto">
-              {/* Header con título y selector */}
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-white text-3xl font-bold">
+              {/* Header con título y selector de tipo */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
+                <h2 className="text-white text-2xl md:text-3xl font-bold">
                   {menuItems.find((item) => item.id === activeTab)?.label}
                 </h2>
 
-                {/* Selector de tipo de media */}
-                <div className="flex gap-2 bg-white/5 backdrop-blur-sm p-1 rounded-xl border border-white/10">
+                <div className="flex gap-2 bg-white/5 backdrop-blur-sm p-1 rounded-xl border border-white/10 w-full sm:w-auto">
                   {mediaTypeOptions.map((option) => (
                     <button
                       key={option.value}
                       onClick={() => setMediaType(option.value as MediaType)}
                       className={`
-                        px-6 py-2 rounded-lg flex items-center gap-2
+                        flex-1 sm:flex-none px-4 md:px-6 py-2 rounded-lg flex items-center justify-center gap-2
                         transition-all duration-300
                         ${
                           mediaType === option.value
@@ -159,19 +149,22 @@ function ProfilePage() {
                       `}
                     >
                       <FontAwesomeIcon icon={option.icon} />
-                      <span className="font-medium">{option.label}</span>
+                      <span className="font-medium text-sm md:text-base">
+                        {option.label}
+                      </span>
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Estados de carga y error */}
+              {/* Estado de carga */}
               {isLoading && (
                 <div className="flex items-center justify-center py-20">
                   <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-cyan-500"></div>
                 </div>
               )}
 
+              {/* Error */}
               {error && (
                 <div className="text-center py-20">
                   <p className="text-red-500 text-xl">{error}</p>
@@ -190,10 +183,8 @@ function ProfilePage() {
                       </p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {/* Renderizado de lista seleccionada por usuario */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                       {mediaList.map((item) => {
-                        // Determinamos propiedades dinámicas dependiendo de si es serie o película
                         const isMovie = mediaType === "movie";
                         const title = isMovie
                           ? (item as Result).title
@@ -212,9 +203,9 @@ function ProfilePage() {
                           <Link
                             to={linkUrl}
                             key={item.id}
-                            className="bg-white/5 backdrop-blur-sm rounded-xl p-5 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105 hover:cursor-pointer"
+                            className="bg-white/5 backdrop-blur-sm rounded-xl p-4 md:p-5 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105 hover:cursor-pointer"
                           >
-                            <div className="aspect-video bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg mb-4 overflow-hidden">
+                            <div className="aspect-video bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg mb-3 md:mb-4 overflow-hidden">
                               <img
                                 src={
                                   item.backdrop_path
@@ -225,10 +216,12 @@ function ProfilePage() {
                                 className="w-full h-full object-cover"
                               />
                             </div>
-                            <h3 className="text-white font-semibold mb-2 line-clamp-2">
+                            <h3 className="text-white font-semibold mb-1 md:mb-2 line-clamp-2 text-sm md:text-base">
                               {title}
                             </h3>
-                            <p className="text-white/60 text-sm">{year}</p>
+                            <p className="text-white/60 text-xs md:text-sm">
+                              {year}
+                            </p>
                           </Link>
                         );
                       })}
