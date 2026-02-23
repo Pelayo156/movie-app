@@ -28,17 +28,10 @@ function TvSeriesDetailPage() {
 
   const [seasons, setSeasons] = useState<Season[]>([]);
 
-  // Variables para estado de carga y mensajes de errores
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<String | null>(null);
-
   const tvSerieId = useParams().id;
 
   useEffect(() => {
     const fetchTvSerieDetails = async () => {
-      setIsLoading(true);
-      setError(null);
-
       // Se guardan detalles de la serie
       try {
         if (tvSerieId) {
@@ -47,18 +40,12 @@ function TvSeriesDetailPage() {
           setSeasons(response.seasons);
         }
       } catch (err) {
-        setError(`Error al obtener TV Serie con id ${tvSerieId}.`);
         console.error(err);
-      } finally {
-        setIsLoading(false);
       }
     };
     fetchTvSerieDetails();
 
     const fetchTvSerieVideos = async () => {
-      setIsLoading(true);
-      setError(null);
-
       // Se guardan videos de la serie
       try {
         if (tvSerieId) {
@@ -66,10 +53,7 @@ function TvSeriesDetailPage() {
           setTvSerieVideos(response.results);
         }
       } catch (err) {
-        setError(`Error al obtener videos de TV Serie con id ${tvSerieId}`);
         console.error(err);
-      } finally {
-        setIsLoading(false);
       }
     };
     fetchTvSerieVideos();
@@ -82,21 +66,23 @@ function TvSeriesDetailPage() {
       (video) =>
         video.name === "Official Trailer" &&
         video.official &&
-        video.site === "YouTube"
+        video.site === "YouTube",
     );
 
     /// Si no encuentra, buscar cualquier trailer oficial
     if (!trailer) {
       trailer = video.find(
         (video) =>
-          video.type === "Trailer" && video.official && video.site === "YouTube"
+          video.type === "Trailer" &&
+          video.official &&
+          video.site === "YouTube",
       );
     }
 
     // Si aún no encuentra, buscar cualquier trailer
     if (!trailer) {
       trailer = video.find(
-        (video) => video.type === "Trailer" && video.site === "YouTube"
+        (video) => video.type === "Trailer" && video.site === "YouTube",
       );
     }
 
@@ -213,8 +199,8 @@ function TvSeriesDetailPage() {
               tvSerieDetail?.original_language &&
               capitalize(
                 new Intl.DisplayNames(["es"], { type: "language" }).of(
-                  tvSerieDetail?.original_language
-                )
+                  tvSerieDetail?.original_language,
+                ),
               )
             }
           />

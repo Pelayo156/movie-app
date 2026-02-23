@@ -12,18 +12,11 @@ function CelebritieDetailPage() {
   const [celebritieDetail, setCelebritieDetail] =
     useState<APITmdbPeopleDetailsResponse | null>(null);
 
-  // Variables para estado de carga y mensajes de errores
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<String | null>(null);
-
   useEffect(() => {
     // Para que el usuario cuando entre a esta vista se vea desde el inicio
     window.scrollTo(0, 0);
 
     const fetchCelebritieDetail = async () => {
-      setIsLoading(true);
-      setError(null);
-
       // Se guardan detalles de Celebridad
       try {
         if (celebritieId) {
@@ -31,12 +24,7 @@ function CelebritieDetailPage() {
           setCelebritieDetail(response);
         }
       } catch (err) {
-        setError(
-          `Error al obtener detalle de celebridad con id ${celebritieId}.`
-        );
         console.error(err);
-      } finally {
-        setIsLoading(false);
       }
     };
 

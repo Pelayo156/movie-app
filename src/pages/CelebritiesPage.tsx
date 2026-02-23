@@ -27,7 +27,6 @@ function CelebritiesPage() {
 
   // Variables para estado de carga y mensajes de errores
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<String | null>(null);
 
   useEffect(() => {
     searchText == null
@@ -37,7 +36,6 @@ function CelebritiesPage() {
 
   const fetchCelebritiesList = async () => {
     setIsLoading(true);
-    setError(null);
 
     try {
       const response = await peopleListsService.getPopularPeople(currentPage);
@@ -50,7 +48,6 @@ function CelebritiesPage() {
         setTotalPages(data.total_pages);
       }
     } catch (err) {
-      setError("Error al obtener lista de celebridades.");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -59,7 +56,7 @@ function CelebritiesPage() {
 
   const searchPersonsWithText = async (
     text: string,
-    firstSearch: boolean = false
+    firstSearch: boolean = false,
   ): Promise<void> => {
     let response;
     try {
@@ -67,7 +64,7 @@ function CelebritiesPage() {
       response = await searchService.getSearchPerson(text, currentPage);
     } catch (error) {
       throw new Error(
-        `No ha sido posible obtener la lista de películas: ${error}`
+        `No ha sido posible obtener la lista de películas: ${error}`,
       );
     }
 
@@ -184,7 +181,7 @@ function CelebritiesPage() {
                   <option key={pageNumber} value={pageNumber}>
                     {pageNumber}
                   </option>
-                )
+                ),
               )}
             </select>
             <span>de {totalPages}</span>

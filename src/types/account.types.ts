@@ -12,3 +12,17 @@ export interface APITmdbFavoriteMoviesResponse {
   total_pages: number;
   total_results: number;
 }
+
+export interface APITmdbAccountStatesResponse {
+    id:        number;
+    favorite:  boolean;
+    rated:     Rated;
+    watchlist: boolean;
+}
+
+export interface Rated {
+    value: number;
+}
+
+export type MediaAction = "favorite" | "watchlist";
+export type MediaType = "movie" | "tv";

@@ -11,32 +11,29 @@ import type { Result } from "../types/movieLists.types";
 import type { ResultTvSeriesLists } from "../types/tvSeriesLists.types";
 import { accountService } from "../services/accountService";
 import { Link } from "react-router-dom";
+import type { MediaAction, MediaType } from "../types/account.types";
 
 const apiImageUrl = import.meta.env.VITE_API_IMAGE_URL;
 
+type AnyMedia = Result | ResultTvSeriesLists;
+
 function ProfilePage() {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<"favorites" | "watchlater">(
-    "favorites"
-  );
-  const [mediaType, setMediaType] = useState<"movie" | "tv">("movie");
+  const [activeTab, setActiveTab] = useState<MediaAction>("favorite");
+  const [mediaType, setMediaType] = useState<MediaType>("movie");
 
   const menuItems = [
-    { id: "favorites", label: "Favoritos", icon: faHeart },
-    { id: "watchlater", label: "Ver más tarde", icon: faClock },
+    { id: "favorite", label: "Favoritos", icon: faHeart },
+    { id: "watchlist", label: "Ver más tarde", icon: faClock },
   ];
 
-  // 👇 NUEVO - Opciones del selector
   const mediaTypeOptions = [
     { value: "movie", label: "Películas", icon: faFilm },
     { value: "tv", label: "Series", icon: faTv },
   ];
 
-  // Variables para almacenar películas
-  const [moviesList, setMoviesList] = useState<Result[]>([]);
-
-  // Variables para almacenar series
-  const [tvShowsList, setTvShowsList] = useState<ResultTvSeriesLists[]>([]);
+  // Variable para almacenar lista seleccionada por usuario
+  const [mediaList, setMediaList] = useState<AnyMedia[]>([]);
 
   // Variables para estado de carga y mensajes de errores
   const [isLoading, setIsLoading] = useState(false);
@@ -45,41 +42,32 @@ function ProfilePage() {
   // UseEffect para cargar datos cuando cambia el tab o el mediaType
   useEffect(() => {
     if (user != null) {
-      fetchMenuOptionList(activeTab);
+      fetchData(activeTab, mediaType);
     }
-  }, [activeTab, mediaType]);
+  }, [activeTab, mediaType, user]);
 
-  const fetchMenuOptionList = async (option: "favorites" | "watchlater") => {
+  // Llamada para almacenar contenido seleccionado por el usuario
+  const fetchData = async (action: MediaAction, type: MediaType) => {
+    if (!user?.id) return;
+
     setIsLoading(true);
     setError(null);
 
     try {
-      if (option === "favorites") {
-        // Cargar películas favoritas
-        const moviesResponse = await accountService.getFavoritesMoviesList(
-          1,
-          user?.id
-        );
-        setMoviesList(moviesResponse.results);
-
-        // Cargar series favoritas
-        const tvResponse = await accountService.getFavoritesTVList(1, user?.id);
-        setTvShowsList(tvResponse.results);
-      } else if (option === "watchlater") {
-        setMoviesList([]);
-        setTvShowsList([]);
-      }
+      const response = await accountService.getMediaList(
+        user.id,
+        action,
+        type,
+        1,
+      );
+      // Guardamos en la lista única
+      setMediaList(response.results as AnyMedia[]);
     } catch (err) {
-      setError(`No ha sido posible obtener la lista de ${option}`);
+      setError(`No ha sido posible obtener la lista de ${action}`);
       console.error(err);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  // 👇 NUEVO - Obtener la lista correcta según el tipo de media seleccionado
-  const getCurrentList = () => {
-    return mediaType === "movie" ? moviesList : tvShowsList;
   };
 
   return (
@@ -108,7 +96,7 @@ function ProfilePage() {
             {menuItems.map((item) => (
               <button
                 key={item.id}
-                onClick={() => setActiveTab(item.id as any)}
+                onClick={() => setActiveTab(item.id as MediaAction)}
                 className={`
                   w-full px-6 py-4 rounded-xl text-left
                   flex items-center gap-4
@@ -159,9 +147,7 @@ function ProfilePage() {
                   {mediaTypeOptions.map((option) => (
                     <button
                       key={option.value}
-                      onClick={() =>
-                        setMediaType(option.value as "movie" | "tv")
-                      }
+                      onClick={() => setMediaType(option.value as MediaType)}
                       className={`
                         px-6 py-2 rounded-lg flex items-center gap-2
                         transition-all duration-300
@@ -195,7 +181,7 @@ function ProfilePage() {
               {/* Grid de contenido */}
               {!isLoading && !error && (
                 <>
-                  {getCurrentList().length === 0 ? (
+                  {mediaList.length === 0 ? (
                     <div className="text-center py-20">
                       <p className="text-white/60 text-xl">
                         No tienes{" "}
@@ -205,63 +191,47 @@ function ProfilePage() {
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {mediaType === "movie"
-                        ? // Renderizar películas
-                          moviesList.map((movie) => (
-                            <Link
-                              to={`/movie/${movie.id}`}
-                              key={movie.id}
-                              className="bg-white/5 backdrop-blur-sm rounded-xl p-5 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105 hover:cursor-pointer"
-                            >
-                              <div className="aspect-video bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg mb-4 overflow-hidden">
-                                <img
-                                  src={
-                                    movie.backdrop_path
-                                      ? `${apiImageUrl}/w300/${movie.backdrop_path}`
-                                      : "https://via.placeholder.com/300x169?text=No+Image"
-                                  }
-                                  alt={movie.title}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                              <h3 className="text-white font-semibold mb-2 line-clamp-2">
-                                {movie.title}
-                              </h3>
-                              <p className="text-white/60 text-sm">
-                                {movie.release_date
-                                  ? new Date(movie.release_date).getFullYear()
-                                  : "N/A"}
-                              </p>
-                            </Link>
-                          ))
-                        : // Renderizar series
-                          tvShowsList.map((show) => (
-                            <Link
-                              to={`/tv/${show.id}`}
-                              key={show.id}
-                              className="bg-white/5 backdrop-blur-sm rounded-xl p-5 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105 hover:cursor-pointer"
-                            >
-                              <div className="aspect-video bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg mb-4 overflow-hidden">
-                                <img
-                                  src={
-                                    show.backdrop_path
-                                      ? `${apiImageUrl}/w300/${show.backdrop_path}`
-                                      : "https://via.placeholder.com/300x169?text=No+Image"
-                                  }
-                                  alt={show.name}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                              <h3 className="text-white font-semibold mb-2 line-clamp-2">
-                                {show.name}
-                              </h3>
-                              <p className="text-white/60 text-sm">
-                                {show.first_air_date
-                                  ? new Date(show.first_air_date).getFullYear()
-                                  : "N/A"}
-                              </p>
-                            </Link>
-                          ))}
+                      {/* Renderizado de lista seleccionada por usuario */}
+                      {mediaList.map((item) => {
+                        // Determinamos propiedades dinámicas dependiendo de si es serie o película
+                        const isMovie = mediaType === "movie";
+                        const title = isMovie
+                          ? (item as Result).title
+                          : (item as ResultTvSeriesLists).name;
+                        const dateString = isMovie
+                          ? (item as Result).release_date
+                          : (item as ResultTvSeriesLists).first_air_date;
+                        const year = dateString
+                          ? new Date(dateString).getFullYear()
+                          : "N/A";
+                        const linkUrl = isMovie
+                          ? `/movie/${item.id}`
+                          : `/tv/${item.id}`;
+
+                        return (
+                          <Link
+                            to={linkUrl}
+                            key={item.id}
+                            className="bg-white/5 backdrop-blur-sm rounded-xl p-5 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105 hover:cursor-pointer"
+                          >
+                            <div className="aspect-video bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg mb-4 overflow-hidden">
+                              <img
+                                src={
+                                  item.backdrop_path
+                                    ? `${apiImageUrl}/w300/${item.backdrop_path}`
+                                    : "https://via.placeholder.com/300x169?text=No+Image"
+                                }
+                                alt={title}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <h3 className="text-white font-semibold mb-2 line-clamp-2">
+                              {title}
+                            </h3>
+                            <p className="text-white/60 text-sm">{year}</p>
+                          </Link>
+                        );
+                      })}
                     </div>
                   )}
                 </>
@@ -273,5 +243,4 @@ function ProfilePage() {
     </div>
   );
 }
-
 export default ProfilePage;

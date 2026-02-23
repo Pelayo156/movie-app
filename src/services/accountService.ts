@@ -1,149 +1,82 @@
 import type {
   APITmdbFavoriteResponse,
-  APITmdbFavoriteMoviesResponse,
+  APITmdbAccountStatesResponse
 } from "../types/account.types";
 import apiClient from "./apiClient";
 import type { APITmdbMovieListsPopularResponse } from "../types/movieLists.types";
 import type { APITmdbTVSeriesListResponse } from "../types/tvSeriesLists.types";
+import type { MediaAction, MediaType } from "../types/account.types";
 
 export const accountService = {
-  // Endpoint para añadir o quitar una película de favoritos. Esto en el caso de que el usuario esté logueado
-  toggleFavorite: async (
+  /**
+  * Función para cambiar estado de favoritos o ver más tarde de una película o tv show
+  */
+  toggleMediaStatus: async (
     accountId: number,
     sessionId: string,
-    mediaType: string,
+    mediaType: MediaType,
     mediaId: number,
-    favorite: boolean
+    action: MediaAction,
+    isActive: boolean
   ): Promise<APITmdbFavoriteResponse> => {
     const response = await apiClient.post(
-      `/account/${accountId}/favorite`,
+      `/account/${accountId}/${action}`,
       {
         media_type: mediaType,
         media_id: mediaId,
-        favorite: favorite,
+        [action]: isActive, 
       },
       {
-        params: {
-          session_id: sessionId,
-        },
+        params: { session_id: sessionId },
       }
     );
     return response.data;
   },
-  toggleWatchlist: async (
+
+  /**
+   * función para obtener lista de favoritos o ver más tarde, ya sea de películas o tv shows
+   */
+  getMediaList: async (
     accountId: number,
-    sessionId: string,
-    mediaType: string,
-    mediaId: number,
-    watchlist: boolean
-  ): Promise<APITmdbFavoriteResponse> => {
-    // Puedes usar el mismo tipo de respuesta
-    const response = await apiClient.post(
-      `/account/${accountId}/watchlist`,
-      {
-        media_type: mediaType,
-        media_id: mediaId,
-        watchlist: watchlist,
-      },
-      {
-        params: {
-          session_id: sessionId,
-        },
-      }
-    );
-    return response.data;
-  },
-  getFavoritesMoviesList: async (
-    page: number,
-    accountId?: number
-  ): Promise<APITmdbMovieListsPopularResponse> => {
-    const response = await apiClient.get(
-      `/account/${accountId}/favorite/movies?language=es-CL&page=${page}`
-    );
-    return response.data;
-  },
-  getFavoritesTVList: async (
-    page: number,
-    accountId?: number
-  ): Promise<APITmdbTVSeriesListResponse> => {
+    action: MediaAction,
+    mediaType: MediaType,
+    page: number
+  ): Promise<APITmdbMovieListsPopularResponse | APITmdbTVSeriesListResponse> => {
     const sessionId = localStorage.getItem("tmdb_session_id");
-    const response = await apiClient.get(`/account/${accountId}/favorite/tv`, {
-      params: {
-        session_id: sessionId,
-        page: page,
-      },
-    });
+    
+    const urlMediaType = mediaType === "movie" ? "movies" : "tv";
+
+    const response = await apiClient.get(
+      `/account/${accountId}/${action}/${urlMediaType}`,
+      {
+        params: {
+          session_id: sessionId,
+          language: "es-CL",
+          page: page,
+        },
+      }
+    );
     return response.data;
   },
-  isFavoriteMovie: async (
-    accountId: number | null,
-    mediaId: number | null
-  ): Promise<boolean> => {
+  /**
+   *
+   * Función que verifica en un solo llamado si está en favoritos o ver más tarde (ambos al mismo tiempo)
+   */
+  getAccountStates: async (
+    mediaId: number,
+    mediaType: MediaType,
+    sessionId: string
+  ): Promise<APITmdbAccountStatesResponse> => {
     try {
-      if (accountId == null || mediaId == null) {
-        return false;
-      }
-
-      // Obtener primera página
-      let favoritesList = await accountService.getFavoritesMoviesList(
-        1,
-        accountId
-      );
-      const totalPages = favoritesList.total_pages;
-
-      // revisar en cada una de las páginas
-      for (let page = 1; page <= totalPages; page++) {
-        if (page > 1) {
-          favoritesList = await accountService.getFavoritesMoviesList(
-            page,
-            accountId
-          );
-        }
-
-        const found = favoritesList.results.some(
-          (media: any) => media.id === mediaId
-        );
-
-        if (found) return true;
-      }
-
-      return false;
+      const response = await apiClient.get(`/${mediaType}/${mediaId}/account_states`, {
+        params: { session_id: sessionId },
+      });
+      return response.data;
     } catch (error) {
-      console.error("Error al verificar favorito:", error);
-      return false;
-    }
-  },
-  isFavoriteTVShow: async (
-    accountId: number | null,
-    mediaId: number | null
-  ): Promise<boolean> => {
-    try {
-      if (accountId == null || mediaId == null) {
-        return false;
-      }
-
-      let favoritesList = await accountService.getFavoritesTVList(1, accountId);
-      const totalPages = favoritesList.total_pages;
-
-      for (let page = 1; page <= totalPages; page++) {
-        if (page > 1) {
-          favoritesList = await accountService.getFavoritesTVList(
-            page,
-            accountId
-          );
-        }
-
-        const found = favoritesList.results.some(
-          (media: any) => media.id === mediaId
-        );
-
-        if (found) return true;
-      }
-
-      return false;
-    } catch (error) {
-      console.error("Error al verificar favorito de serie:", error);
-      return false;
+      console.error(`Error obteniendo el estado de la cuenta para el ID ${mediaId}:`, error);
+      return { id: 0, favorite: false, watchlist: false, rated: {
+        value: 0
+      } };
     }
   },
 };

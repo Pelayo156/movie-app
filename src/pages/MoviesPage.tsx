@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import CategoryButton from "../components/ui/CategoryButton";
 import {
   faStar,
@@ -36,7 +36,6 @@ function MoviesPage() {
 
   // Variables para estado de carga y mensajes de errores
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<String | null>(null);
 
   useEffect(() => {
     searchText == null
@@ -58,7 +57,6 @@ function MoviesPage() {
       setMoviesList(data.results);
       setTotalPages(data.total_pages);
     } catch (err) {
-      setError("Error al obtener películas populares.");
       console.error(err);
     } finally {
       setIsLoading(false);

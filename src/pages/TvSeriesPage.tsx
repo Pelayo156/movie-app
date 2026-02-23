@@ -24,7 +24,7 @@ function TvSeriesPage() {
 
   // Variable para almacenar categoría actual
   const [currentCategory, setCurrentCategory] = useState<Categories | null>(
-    "airing_today"
+    "airing_today",
   );
 
   // Variable para guardar número de páginas total
@@ -38,7 +38,6 @@ function TvSeriesPage() {
 
   // Variables para estado de carga y mensajes de errores
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<String | null>(null);
 
   useEffect(() => {
     searchText == null
@@ -48,19 +47,18 @@ function TvSeriesPage() {
 
   const fetchTvSeriesByCategory = async (
     category: string | null,
-    page: number
+    page: number,
   ) => {
     setIsLoading(true);
     try {
       const response = await tvSeriesListsService.getTvSerieByCategory(
         category != null ? category : "",
-        page
+        page,
       );
       const data = response;
       setTvSeriesList(data.results);
       setTotalPages(data.total_pages);
     } catch (err) {
-      setError("Error al obtener películas populares.");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -86,7 +84,7 @@ function TvSeriesPage() {
 
   const searchTvSeriesWithText = async (
     text: string,
-    firstSearch: boolean = false
+    firstSearch: boolean = false,
   ): Promise<void> => {
     // Limpiar variables de categoría
     setCurrentCategory(null);
@@ -97,7 +95,7 @@ function TvSeriesPage() {
       response = await searchService.getSearchTv(text, currentPage);
     } catch (error) {
       throw new Error(
-        `No ha sido posible obtener la lista de películas: ${error}`
+        `No ha sido posible obtener la lista de películas: ${error}`,
       );
     }
 
@@ -191,7 +189,7 @@ function TvSeriesPage() {
                   <option key={pageNumber} value={pageNumber}>
                     {pageNumber}
                   </option>
-                )
+                ),
               )}
             </select>
             <span>de {totalPages}</span>

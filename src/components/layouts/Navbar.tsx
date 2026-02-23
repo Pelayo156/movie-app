@@ -1,5 +1,5 @@
 // src/components/Navbar.tsx
-import { useEffect, useState } from "react"; // Importa useState
+import { useState } from "react"; // Importa useState
 import MenuButton from "../ui/MenuButton";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -9,7 +9,6 @@ import {
   faBars,
   faTimes,
   faRightToBracket,
-  faHeart,
   faRightFromBracket,
   faTriangleExclamation,
 } from "@fortawesome/free-solid-svg-icons"; // Importa faBars y faTimes
@@ -58,7 +57,7 @@ function Navbar() {
       const redirectUrl = window.location.origin + "/auth/callback";
 
       console.log(
-        `https://www.themoviedb.org/authenticate/${response.request_token}?redirect_to=${redirectUrl}`
+        `https://www.themoviedb.org/authenticate/${response.request_token}?redirect_to=${redirectUrl}`,
       );
 
       // Se redirige al usuario a login de TMDB para validar el token
@@ -79,7 +78,7 @@ function Navbar() {
     try {
       // Se llama a endpoit para eliminar la sesión del usuario
       response = await authenticationService.deleteSession(
-        sessionId ? sessionId : ""
+        sessionId ? sessionId : "",
       );
     } catch (err) {
       toast.error("Error al cerrar sesión");

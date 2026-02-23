@@ -31,10 +31,6 @@ function MovieDetailPage() {
   // Variable para comprobar si el modal del trailer está abierto
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Variables para estado de carga y mensajes de errores
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<String | null>(null);
-
   const movieId = useParams().id;
 
   useEffect(() => {
@@ -42,9 +38,6 @@ function MovieDetailPage() {
     window.scrollTo(0, 0);
 
     const fetchMovieDetails = async () => {
-      setIsLoading(true);
-      setError(null);
-
       // Se guardan detalles de la película
       try {
         if (movieId) {
@@ -52,17 +45,11 @@ function MovieDetailPage() {
           setMovieDetail(response);
         }
       } catch (err) {
-        setError(`Error al obtener detalles de película con id ${movieId}.`);
         console.error(err);
-      } finally {
-        setIsLoading(false);
       }
     };
 
     const fetchMovieCredits = async () => {
-      setIsLoading(true);
-      setError(null);
-
       // Se guardan creditos de la película
       try {
         if (movieId) {
@@ -70,17 +57,11 @@ function MovieDetailPage() {
           setMovieCredits(response);
         }
       } catch (err) {
-        setError(`Error al obtener creditos de película con id ${movieId}.`);
         console.error(err);
-      } finally {
-        setIsLoading(false);
       }
     };
 
     const fetchMovieVideos = async () => {
-      setIsLoading(true);
-      setError(null);
-
       // Se guardan videos de la película
       try {
         if (movieId) {
@@ -88,10 +69,7 @@ function MovieDetailPage() {
           setMovieVideos(response);
         }
       } catch (err) {
-        setError(`Error al obtener videos de película con id ${movieId}.`);
         console.error(err);
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -102,28 +80,30 @@ function MovieDetailPage() {
 
   // Función para obtener el primer trailer oficial
   const getOfficialTrailer = (
-    videos: APITmdbMovieVideosResponse
+    videos: APITmdbMovieVideosResponse,
   ): Result | null => {
     // Buscar trailer oficial con nombre "Official Trailer"
     let trailer = videos.results.find(
       (video) =>
         video.name === "Official Trailer" &&
         video.official &&
-        video.site === "YouTube"
+        video.site === "YouTube",
     );
 
     // Si no encuentra, buscar cualquier trailer oficial
     if (!trailer) {
       trailer = videos.results.find(
         (video) =>
-          video.type === "Trailer" && video.official && video.site === "YouTube"
+          video.type === "Trailer" &&
+          video.official &&
+          video.site === "YouTube",
       );
     }
 
     // Si aún no encuentra, buscar cualquier trailer
     if (!trailer) {
       trailer = videos.results.find(
-        (video) => video.type === "Trailer" && video.site === "YouTube"
+        (video) => video.type === "Trailer" && video.site === "YouTube",
       );
     }
 
@@ -242,8 +222,8 @@ function MovieDetailPage() {
                 movieDetail?.original_language &&
                 capitalize(
                   new Intl.DisplayNames(["es"], { type: "language" }).of(
-                    movieDetail?.original_language
-                  )
+                    movieDetail?.original_language,
+                  ),
                 )
               }
             />

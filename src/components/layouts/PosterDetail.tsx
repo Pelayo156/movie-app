@@ -22,7 +22,7 @@ function PosterDetail(props: Props) {
 
   return (
     // Contenedor principal: Ajuste de altura y padding vertical para móvil. Fondo oscuro.
-    <div className="relative w-full h-auto min-h-[70vh] md:min-h-[60vh] pb-10 md:pb-0 bg-black pt-4 md:pt-0">
+    <div className="relative w-full h-auto min-h-[70vh] md:min-h-[60vh] pb-10 bg-black">
       {/* Imagen de fondo (backdrop) - Oculta en pantallas muy pequeñas, visible con ancho reducido en sm, más ancho en md. */}
       {/* Usamos un degradado más fuerte para asegurar contraste con el texto en móviles. */}
       <div
@@ -112,7 +112,7 @@ function PosterDetail(props: Props) {
                   icon={faHeart}
                   message={["Agregar a favoritos", "Quitar de favoritos"]}
                   mediaType={props.mediaType}
-                  actionListType="favorites"
+                  actionListType="favorite"
                 />
                 <AccountActionButton
                   icon={faBookmark}
@@ -121,7 +121,7 @@ function PosterDetail(props: Props) {
                     "Quitar de ver más tarde",
                   ]}
                   mediaType={props.mediaType}
-                  actionListType="watchlater"
+                  actionListType="watchlist"
                 />
               </div>
             )}
